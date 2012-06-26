@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entities>
+	<entity project="jobTracker" entityName="lead">
+		<!-- ID is composite of project.name -->
+		<static javaClassPath="cms.entity"/>
+		<static javaClassImplementsOrExtends=" implements EntityVO"/>
+		<members>
+			<member name="id" dataType="int" min="" max="" default="" relation="" description="This one has a desctiption."/>
+			<member name="statusId" dataType="int" min="" max="" default="" relation="" description=""/>
+			<member name="title" dataType="String" min="" max="" default="" relation="" description=""/>
+			<member name="description" dataType="String" min="" max="" default="" relation="" description=""/>
+			<member name="durationWeeks" dataType="int" min="" max="" default="" relation="" description=""/>
+			<member name="consultantId" dataType="int" min="" max="" default="" relation="" description=""/>
+			<member name="createdDtime" dataType="Date" min="" max="" default="" relation="" description=""/>
+			<member name="coveringLetterId" dataType="int" min="" max="" default="" relation="" description=""/>
+			<member name="rating" dataType="int" min="" max="" default="" relation="" description=""/>
+			<member name="resume_sent_name" dataType="String" min="" max="" default="" relation="" description=""/>
+			<member name="salaryPerAnnum" dataType="int" min="" max="" default="" relation="" description=""/>
+			<member name="ratePerDay" dataType="int" min="" max="" default="" relation="" description=""/>
+			<member name="employer" dataType="String" min="" max="" default="" relation="" description=""/>
+			<member name="employerContact" dataType="String" min="" max="" default="" relation="" description=""/>
+			<member name="employerNotes" dataType="String" min="" max="" default="" relation="" description=""/>
+		</members>
+	</entity>
+	<entity project="jobTracker" entityName="leadStatus">
+		<!-- ID is composite of project.name -->
+		<static javaClassPath="cms.entity"/>
+		<static javaClassImplementsOrExtends=" implements EntityVO"/>
+		<members>
+			<member name="one" dataType="int" min="" max="" default="" relation="" description=""/>
+			<member name="two" dataType="int" min="" max="" default="" relation="" description="tHIS IS GOOD"/>
+			<member name="three" dataType="int" min="" max="" default="" relation="" description="tHIS IS GOOD"/>
+		</members>
+	</entity>
+</entities>

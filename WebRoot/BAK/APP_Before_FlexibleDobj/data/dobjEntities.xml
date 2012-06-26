@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entities>
+	<entity project="jobTracker" entityName="lead">
+		<!-- ID is composite of project.name -->
+		<static javaClassPath="cms.entity"/>
+		<members>
+			<member name="id" type="int" min="" max="" default="" relation="" description=""/>
+			<member name="statusId" type="int" min="" max="" default="" relation="" description=""/>
+			<member name="title" type="String" min="" max="" default="" relation="" description=""/>
+			<member name="description" type="String" min="" max="" default="" relation="" description=""/>
+			<member name="durationWeeks" type="int" min="" max="" default="" relation="" description=""/>
+			<member name="consultantId" type="int" min="" max="" default="" relation="" description=""/>
+			<member name="createdDtime" type="Date" min="" max="" default="" relation="" description=""/>
+			<member name="coveringLetterId" type="int" min="" max="" default="" relation="" description=""/>
+			<member name="rating" type="int" min="" max="" default="" relation="" description=""/>
+			<member name="resume_sent_name" type="String" min="" max="" default="" relation="" description=""/>
+			<member name="salaryPerAnnum" type="int" min="" max="" default="" relation="" description=""/>
+			<member name="ratePerDay" type="int" min="" max="" default="" relation="" description=""/>
+			<member name="employer" type="String" min="" max="" default="" relation="" description=""/>
+			<member name="employerContact" type="String" min="" max="" default="" relation="" description=""/>
+			<member name="employerNotes" type="String" min="" max="" default="" relation="" description=""/>
+		</members>
+	</entity>
+</entities>

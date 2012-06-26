@@ -1,0 +1,165 @@
+/* general.css*/
+
+body {
+    margin: 0px;
+}
+td {
+    vertical-align: top;
+}
+body, td {
+    font-family: Verdana;
+    font-size: 9pt;
+}
+table.table-main, td.table-main , .table-tab-on {
+    background-color: #F0F0F0;
+}
+td.table-tab-on , td.table-tab-off {
+    border-top: 1px solid #B1B2B3;
+    border-left: 1px solid #B1B2B3;
+    /*
+    border-right: 1px solid #B1B2B3;
+    */
+    font-size: 8pt;
+    text-align: center;
+}
+textarea {
+    background-image: url(bgLineNumersGrey.gif);
+    background-repeat: repeat-y;
+    padding-left:15px;
+    border:1px solid #B1B2B3;
+}
+select, .txtDefault {
+    font-family: Consolas, "Courier New";
+    font-size: 10pt;
+    border: 0px;
+    border-right: 1px solid #CCC;
+    border-bottom: 1px solid #CCC;
+
+}
+.txt-small {
+    font-size: 7pt;
+}
+.table-tab-on {
+}
+body, .table-tab-off {
+    background-color: #EEEEEC;
+}
+.table-tab-off {
+    border-bottom: 1px solid #B1B2B3;
+}
+table.table-main {
+    border-top: 2px solid #FFF;
+}
+table.table-main, td.table-main {
+    border-left: 1px solid #B1B2B3;
+    border-right: 1px solid #B1B2B3;
+    border-bottom: 1px solid #B1B2B3;
+}
+.txa-output {
+    width: 100%;
+    /*height: 500px;*/
+    height: 100%;
+    font-size: 8pt;
+}
+.txaDefault {
+    font-family: Consolas, "Courier New";
+    font-size:9pt;
+}
+.txa-func {
+    width: 100%;
+    height: 270px;
+}
+.txa-setsInput {
+    height: 300px;
+    width:399px;
+}
+.button-default, .button-off {
+    font-size: 7pt;
+    font-family: Verdana;
+    color: black;
+    background-color: #e6e9df;
+    border: 1px solid #B1B2B3;
+    border-bottom: 1px solid #999;
+    background: url("bgButton.gif");
+}
+.button-off {
+    color: #b4b8a9;
+    background-color: #e6e9df;
+    border: 1px solid #b4b8a9;
+}
+.area-buttonGroup {
+    height: 26px;
+    margin: 3px;
+    padding: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 1px solid #b4b8a9;
+    background-color: #A8A8A8;
+}
+.codeWindow {
+/*
+    font-family: Consolas, "Courier New";
+    font-size: 8pt;
+  */
+    line-height: 9pt;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    height: 14px;
+    color: #FFF;
+    font-family: Consolas, Helvetica, Arial;
+    border: 1px solid #FFF;
+    border-top: 1px solid #999;
+    border-left: 1px solid #999;
+    background-color: #A8A8A8;
+}
+.areaSub {
+    border:1px solid #FFF;
+    border-top:1px solid #CCC;
+    border-left:1px solid #CCC;
+    color:#888D8C;
+}
+.areaSubInner {
+    border:1px solid #CCC;
+    border-top:1px solid #FFF;
+    border-left:1px solid #FFF;
+    color:#888D8C;
+    padding:3px;
+}
+.areaSub .button-default {
+    border:1px solid #888D8C;
+    color:#888D8C;
+}
+.txtVeryBold {
+    font-weight:bold;
+    color:#888;
+}
+.txtVeryFaint {
+    color:#A8ADAC;
+}
+.clicky {
+    cursor: pointer;
+}
+.inputNarrow {
+    width:40px;
+}
+.inputMedium {
+    width:80px;
+}
+.thinBorder {
+    border: 0px;
+    border-right: 1px solid #D8D8D8;
+    border-bottom: 1px solid #D8D8D8;
+    font-family: Consolas, "Courier New";
+/*	border-color: #A8A8A8; */
+}
+.putContents {
+    background-image: url(bgButtonBack.gif);
+    background-position: 0px 0px;
+    padding-left:10px;
+}
+.dataGridHead {
+    background-color:#DDD;
+    left:0px;
+    right:0px;
+    cursor:pointer;
+}

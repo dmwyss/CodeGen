@@ -1,0 +1,130 @@
+/* general.css*/
+
+body {
+    margin: 0px;
+    background-color: #A8A8A8;
+}
+td {
+    vertical-align: top;
+}
+body, td {
+    font-family: Verdana;
+    font-size: 9pt;
+}
+td.table-tab-on , td.table-tab-off {
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    font-size: 8pt;
+    text-align: center;
+}
+textarea {
+    background-image: url(bgLineNumersGrey.gif);
+    background-repeat: repeat-y;
+    padding-left:15px;
+    border:1px solid #B1B5A7;
+}
+.txt-small {
+    font-size: 7pt;
+}
+.table-tab-on {
+    background-color: #D8D8D8;
+}
+.table-tab-off {
+    border-bottom: 1px solid black;
+    background-color: #A8A8A8;
+}
+table.table-main, td.table-main {
+    background-color: #D8D8D8;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+}
+.txa-output {
+    width: 100%;
+    /*height: 500px;*/
+    height: 100%;
+    font-size: 8pt;
+}
+.txa-func {
+    width: 100%;
+    height: 270px;
+    font-size: 8pt;
+}
+.txa-setsInput {
+    height: 300px;
+    width:399px;
+}
+.button-default, .button-off {
+    font-size: 7pt;
+    font-family: Verdana;
+    color: black;
+    background-color: #e6e9df;
+    border: 1px solid black;
+}
+.button-off {
+    color: #b4b8a9;
+    background-color: #e6e9df;
+    border: 1px solid #b4b8a9;
+}
+.area-buttonGroup {
+    height: 26px;
+    margin: 3px;
+    padding: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 1px solid #b4b8a9;
+    background-color: #A8A8A8;
+}
+.codeWindow {
+    font-family: "Courier New";
+    font-size: 8pt;
+    line-height: 9pt;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    height: 9px;
+    color: #778866;
+}
+.areaSub {
+    border:2px solid #A8A8A8;
+    color:#888D8C;
+    padding:3px;
+}
+.areaSub .button-default {
+    border:1px solid #888D8C;
+    color:#888D8C;
+}
+.txtVeryBold {
+    font-weight:bold;
+    color:#888;
+}
+.txtVeryFaint {
+    color:#A8ADAC;
+}
+.clicky {
+    cursor: pointer;
+}
+.inputNarrow {
+    width:40px;
+}
+.inputMedium {
+    width:80px;
+}
+.thinBorder {
+    border: 0px;
+    border-right: 1px solid #D8D8D8;
+    border-bottom: 1px solid #D8D8D8;
+/*	border-color: #A8A8A8; */
+}
+.putContents {
+    background-image: url(icnPutBack.gif);
+    background-repeat: no-repeat;
+    background-position: 2px 0px;
+    padding-left:10px;
+}
+.dataGridHead {
+    background-color:#C8C8C8;
+    left:0px;
+    right:0px;
+    cursor:pointer;
+}

@@ -1,0 +1,1975 @@
+<html>
+<head>
+<title>Code Generator</title>
+<meta name="description" content="A file containing one of each of the main HTML input types, and most common non-form-elements.">
+<meta name="keywords" content="css form table select text input stylesheet">
+<script>
+var sTabSelected = "td-String";
+</script>
+<style>
+body {
+	margin: 0px;
+	background-color: #C8CDBC;
+}
+td {
+	vertical-align: top;
+}
+body, td {
+	font-family: Verdana;
+	font-size: 9pt;
+}
+td.table-tab-on , td.table-tab-off {
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	font-size: 8pt;
+	text-align: center;
+}
+.txt-small {
+	font-size: 7pt;
+}
+.table-tab-on {
+	background-color: #D8DDCC;
+}
+.table-tab-off {
+	border-bottom: 1px solid black;
+	background-color: #C8CDBC;
+}
+table.table-main, td.table-main {
+	background-color: #D8DDCC;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
+}
+.txa-output {
+	width: 99%;
+	height: 500;
+	font-size: 8pt;
+}
+.txa-func {
+	width: 100%;
+	height: 270px;
+	font-size: 8pt;
+}
+.button-default, .button-off {
+	font-size: 7pt;
+	font-family: Verdana;
+	color: black;
+	background-color: #e6e9df;
+	border: 1px solid black;
+}
+.button-off {
+	color: #b4b8a9;
+	background-color: #e6e9df;
+	border: 1px solid #b4b8a9;
+}
+.area-buttonGroup {
+	height: 26px;
+	margin: 3px;
+	padding: 3px;
+	padding-left: 5px;
+	padding-right: 5px;
+	border: 1px solid #b4b8a9;
+	background-color: #C8CDBC;
+}
+.codeWindow {
+	font-family: "Courier New";
+	font-size: 8pt;
+	line-height: 9pt;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	height: 9px;
+	color: #778866;
+}
+</style>
+<script src="Util_Cookie.js"></script>
+<script src="CodeGenerator_utils.js"></script>
+<script>
+
+var g_form;
+var g_sHiddenDollar = "*#*";
+
+var isEscapeBackslashes = true;
+var asClippy = new Array();
+var iClippyCurr = -1;
+
+function runStringGeneration(){
+	var sIn = getTextAreaValue("txaIn");
+	if((getRadioValue("radType")) != "DeString"){
+		sIn = getAsString(sIn);
+	} else {
+		sIn = getAsText(sIn);
+	}
+	setTextAreaValue("txaOut", sIn);
+	document.forms[0].txaIn.select();
+}
+// =========================================================================================
+function runDeString(){
+	var sIn = getTextAreaValue("txaIn");
+	sIn = getAsText(sIn);
+	setTextAreaValue("txaOut", sIn);
+	document.forms[0].txaIn.select();
+}
+function getAsText(sIn){
+	var asIn = sIn.split("\n");
+	var sOut = "";
+var iCheck = 0;
+	for(var i = 0; i < asIn.length; i++){
+		if(asIn[i].length > 0){
+			sTemp = getCleanedUpLine(asIn[i]);
+			if(sTemp != "\n"){
+				sOut += getCleanedUpLine(asIn[i]);
+			}
+		}
+		iCheck++;
+	}
+	//a lert(iCheck);
+	return sOut;
+}
+
+// = = = = = = = = = = = = = = = =
+function getCleanedUpLine(sIn){
+	return getOnlyInQuotes(removeIfCommented(removeMarkup(sIn)))
+}
+function removeMarkup(sIn){
+	sIn = replaceSubstring(sIn, "\\n", "");
+	//a lert("remoMark " + sIn);
+	return sIn;
+}
+function getOnlyInQuotes(sIn){
+	var asString = sIn.split("\"");
+	if(asString.length > 2){
+		return asString[1] + "\n";
+	}
+	return "";
+}
+function removeIfCommented(sIn){
+	//sIn = ;
+	var sStripped = removeWhiteSpaceFromFront(sIn);
+	if(sStripped.substring(0,2) == "//"){
+		return "";
+	}
+	return sStripped;
+}
+function removeWhiteSpaceFromFront(sIn){
+	while((sIn.charAt(0) == " ") || (sIn.charAt(0) == "\t")){
+		sIn = sIn.substring(1);
+	}
+	return sIn;
+}
+
+function removeWhiteSpaceFromEnd(sIn){
+	while((sIn.charAt(sIn.length) == " ") || (sIn.charAt(sIn.length) == "\t")){
+		sIn = sIn.substring(0, sIn.length - 1);
+	}
+	return sIn;
+}
+
+function trim(sIn){
+	sIn = removeWhiteSpaceFromFront(removeWhiteSpaceFromEnd(sIn));
+	while(sIn.indexOf("  ") != -1){
+		sIn = replaceSubstring(removeWhiteSpaceFromFront(removeWhiteSpaceFromEnd(sIn)), "  ", " ");
+	}
+	return sIn;
+}
+var g_iReplaceSubstringCounter = 0;
+function replaceSubstring(sSuper, sFind, sReplace) {
+	//a lert("look into " + sSuper);
+	if(sSuper.indexOf(sFind) == -1) {
+		return sSuper; // Find string not found.
+	}
+	if(sFind.length == 0) {
+		return sSuper; // Find string not found.
+	}
+	if(sReplace.indexOf(sFind) != -1) {
+		return sSuper; // Find string not found.
+	}
+	var sOut = "";
+	var iPos = 0;
+	var iPosEnd = sSuper.indexOf(sFind);
+	var iBrake = 0;
+	var iFound = 0;
+	while(iPosEnd != -1) {
+		sOut += sSuper.substring(iPos, iPosEnd) + sReplace;
+		iPos = iPosEnd + sFind.length;
+		iPosEnd = sSuper.indexOf(sFind, iPos);
+		g_iReplaceSubstringCounter++;
+	}
+	sOut += sSuper.substring(iPos);
+	return sOut;
+}
+
+function recursiveReplaceSubstring(sSuper, sFind, sReplace){
+	sOut = sSuper;
+	while(sOut.indexOf(sFind) != -1){
+		var sOut = replaceSubstring(sOut, sFind, sReplace);
+	}
+	return sOut;
+}
+
+// =========================================================================================
+
+function getAsString(sIn){
+	var sRadType = getRadioValue("radType");
+	//var isString = (sRadType == "String");
+	var sVarName = document.forms[0].txtVarName.value;
+	//a lert(isString);
+	var sOut = "";
+	var sLineLeader = "" + sVarName + " += \"\\n";
+	var sLineEnd = "\";";
+	var sIndents = "";
+	var iIndents = parseInt(getTextAreaValue("txtIndentCount"));
+	for(var i = 0; i < iIndents; i++){
+		sIndents += "\t";
+	}
+	if(sRadType == "String"){
+		sOut += "" + sIndents + "String " + sVarName + " = \"\";";
+		sOut += "\n" + sIndents + sLineLeader;
+	} else {
+		sOut += "" + sIndents + "StringBuffer " + sVarName + " = new StringBuffer();";
+		sLineLeader = "" + sVarName + ".append(\"\\n";
+		sLineEnd = "\");";
+		sOut += "\n" + sIndents + "" + sLineLeader;
+	}
+	for(var iC = 0; iC < sIn.length; iC++){
+		var cThis = sIn.charAt(iC);
+		if(cThis == "\n"){
+			sOut += sLineEnd + "\n" + sIndents + "" + sLineLeader;
+		} else if(cThis == "\t"){
+			sOut += "\\t";
+		} else if(cThis == "\r"){
+			sOut += "";
+		} else if(cThis == "\""){
+			sOut += "\\" + cThis + "";
+		} else if(cThis == "\\"){
+			if(isEscapeBackslashes){
+				sOut += "\\";
+			}
+			sOut += "\\";
+		} else {
+			sOut += cThis;
+		}
+	}
+	sOut += sLineEnd;
+	sOut = replaceSubstring(sOut, "/" + "*", "/" + "\" + \"*");
+	sOut = replaceSubstring(sOut, "*" + "/", "*" + "\" + \"/");
+	return sOut;
+}
+function runReCapitalize(){
+	var sSetting = getRadioValue("radTypeCase");
+	var sIn = getTextAreaValue("txaIn");
+	var sOut = "";
+	if(sSetting == "UpperCase"){
+		sOut = getTextAreaValue("txaIn").toUpperCase();
+	} else if(sSetting == "LowerCase"){
+		sOut = getTextAreaValue("txaIn").toLowerCase();
+	} else if(sSetting == "GuessCase"){
+		var asOut = getTextAreaValueAsArray("txaIn");
+		for(var iP = 0; iP < asOut.length; iP++){
+			sOut += ((iP == 0) ? "" : "\n");
+			if(getCase(asOut[iP]) == "UPPER"){
+				sOut += asOut[iP].toLowerCase();
+			} else {
+				sOut += asOut[iP].toUpperCase();
+			}
+		}
+	} else if(sSetting == "InnerCaps"){
+		sOut = getAsInnerCaps(getTextAreaValue("txaIn"));
+	} else if(sSetting == "Underscore"){
+		sOut = getAsUnderscore(getTextAreaValue("txaIn"));
+	}
+	setTextAreaValue("txaOut", sOut);
+	document.forms[0].txaIn.select();
+}
+function getTextAreaValue(sFieldName){
+	return g_form[sFieldName].value;
+}
+function setTextAreaValue(sFieldName, sValue){
+	if(sFieldName == "txaOut"){
+		appendClippy(sValue);
+	}
+	g_form[sFieldName].value = sValue;
+}
+function getRadioValue(sFieldName){
+	var radSrc = document.forms[0][sFieldName];
+	for(var iRC = 0; iRC < radSrc.length; iRC++){
+		if(radSrc[iRC].checked){
+			return radSrc[iRC].value;
+		}
+	}
+	return "";
+}
+function setVarName(sRadSrcName){
+	if(sRadSrcName == "radEscape"){
+		isEscapeBackslashes = (getRadioValue(sRadSrcName) == "Yes");
+		//a lert(isEscapeBackslashes);
+	} else {
+		if(getRadioValue(sRadSrcName) == "String"){
+			setTextAreaValue("txtVarName", "sOut");
+		} else {
+			setTextAreaValue("txtVarName", "sbOut");
+		}
+	}
+}
+var g_sCookieLastTabName = "codeGeneratorLastTabName";
+function runOnLoad(){
+	g_form = document.forms[0];
+	var sCookieLastTab = getCookie(g_sCookieLastTabName);
+	changeTab(sCookieLastTab);
+	resumeCheckedTxtDobj();
+	resumeCheckedTxtDobjSetting();
+}
+function doMouseOverTab(tdTab){
+	tdTab.style.cursor = "hand";
+	if(tdTab.id != sTabSelected){
+		tdTab.className = "table-tab-on";
+	}
+}
+function doMouseOutTab(tdTab){
+	tdTab.style.cursor = "default";
+	if(tdTab.id != sTabSelected){
+		tdTab.className = "table-tab-off";
+	}
+}
+function doOnClickTab(tdTab){
+	setCookie(g_sCookieLastTabName, tdTab.id);
+	changeTab(tdTab.id);
+}
+function changeTab(sTabNew){
+	if(sTabNew == ""){
+		return;
+	}
+	sTabSelected = sTabNew;
+	// Turn all OFF.
+	document.getElementById("td-String").className = "table-tab-off";
+	document.getElementById("span-String").style.display = "none";
+	document.getElementById("td-DeString").className = "table-tab-off";
+	document.getElementById("span-DeString").style.display = "none";
+	document.getElementById("td-Cap").className = "table-tab-off";
+	document.getElementById("span-Cap").style.display = "none";
+	document.getElementById("td-Func").className = "table-tab-off";
+	document.getElementById("span-Func").style.display = "none";
+	document.getElementById("td-Sort").className = "table-tab-off";
+	document.getElementById("span-Sort").style.display = "none";
+	document.getElementById("td-Replace").className = "table-tab-off";
+	document.getElementById("span-Replace").style.display = "none";
+	document.getElementById("td-Shablonen").className = "table-tab-off";
+	document.getElementById("span-Shablonen").style.display = "none";
+	document.getElementById("td-DataObject").className = "table-tab-off";
+	document.getElementById("span-DataObject").style.display = "none";
+	document.getElementById("td-Clippy").className = "table-tab-off";
+	document.getElementById("span-Clippy").style.display = "none";
+
+	// Make sure that the in and out fields are visible
+	document.getElementById("table-inAndOutFields").style.display = "";
+
+	// Turn correct one ON
+	document.getElementById(sTabNew).className = "table-tab-on";
+	if(sTabNew == "td-String"){
+		document.getElementById("span-String").style.display = "";
+	} else if(sTabNew == "td-DeString"){
+		document.getElementById("span-DeString").style.display = "";
+	} else if(sTabNew == "td-Cap"){
+		document.getElementById("span-Cap").style.display = "";
+	} else if(sTabNew == "td-Func"){
+		document.getElementById("span-Func").style.display = "";
+	} else if(sTabNew == "td-Sort"){
+		document.getElementById("span-Sort").style.display = "";
+	} else if(sTabNew == "td-Replace"){
+		document.getElementById("span-Replace").style.display = "";
+	} else if(sTabNew == "td-Shablonen"){
+		document.getElementById("span-Shablonen").style.display = "";
+		document.getElementById("table-inAndOutFields").style.display = "none";
+	} else if(sTabNew == "td-DataObject"){
+		document.getElementById("span-DataObject").style.display = "";
+	} else if(sTabNew == "td-Clippy"){
+		document.getElementById("span-Clippy").style.display = "";
+	}
+}
+
+/*
+ * Remove line returns and new-lines from the start and end of a string.
+ */
+function trimReturns(sIn){
+	var iBrake = 0;
+	while((iBrake++ < 100) && (sIn.length > 0) && ("\r\n".indexOf(sIn.charAt(0)) != -1)){
+		//a lert("removing [" + sIn.charAt(0) + "] (" + sIn.length + ") (" + iBrake + ")");
+		sIn = sIn.substring(1);
+	}
+	while((iBrake++ < 100) && (sIn.length > 0) && ("\r\n".indexOf(sIn.charAt(sIn.length - 1)) != -1)){
+		//a lert("removing [" + sIn.charAt(sIn.length - 1) + "] (" + sIn.length + ") (" + iBrake + ")");
+		sIn = sIn.substring(0, (sIn.length - 1));
+	}
+	return sIn
+}
+
+/*
+ * Create the functionize script.
+ * Loop through all the values, inserting them into the function scripts.
+ */
+function runFunc(){
+	// Get the formatting text
+	var sAllFormats = getTextAreaValue("txaFuncFormat");
+	// Replace tab markers with real tabs
+	sAllFormats = replaceSubstring(sAllFormats, "^t", "\t");
+	// Put the format string back in the format field.
+	setTextAreaValue("txaFuncFormat", sAllFormats);
+	var sOutAll = "";
+	var asFormats = sAllFormats.split("$SECTION{}");
+	for(var iFormat = 0; iFormat < asFormats.length; iFormat++){
+		var sOut = "";
+		var sFormat = asFormats[iFormat];
+		sFormat = trimReturns(sFormat);
+		var sIn = getTextAreaValue("txaIn");
+		var asIn = sIn.split("\n");
+		var sErrors = "";
+		// do cycle here
+		resetCycles();
+		sFormat = setCycleMarkers(sFormat);
+		for(var iLine = 0; iLine < asIn.length; iLine++){
+			if(asIn[iLine].charAt(asIn[iLine].length - 1) == "\r"){
+				asIn[iLine] = asIn[iLine].substring(0, asIn[iLine].length -1);
+			}
+			if(asIn[iLine].length != 0){
+				var asValues = asIn[iLine].split("$");
+				//a lert("asValues " + asValues);
+				var sTemp = sFormat;
+				var iBit = 0;
+				sTemp = replaceSubstring(sTemp, "$COUNTER{}", "" + iLine);
+				for(; iBit < asValues.length; iBit++){
+					sTemp = replaceSubstring(sTemp, "${" + iBit + "}", asValues[iBit]);
+				}
+				// Check if next value to look for is there...
+				if(sTemp.indexOf("${" + iBit + "}") != -1){
+					var sEss = (iBit > 1) ? "s" : "";
+					sErrors += "Line " + (iLine + 1) + " only has " + (iBit) + " value" + sEss + ", is missing some values.\n";
+				}
+				sOut += evaluateMod(sTemp) + "\n";
+			}
+			if(sFormat.indexOf("$NOREPEAT{}") != -1){
+				sOut = replaceSubstring(sOut, "$NOREPEAT{}", "");
+				break;
+			}
+		}
+		sOut = replaceCycleMarkers(sOut);
+		sOutAll += sOut;
+	}
+	if(sErrors.length > 0){
+		alert(sErrors);
+	}
+	setTextAreaValue("txaOut", sOutAll);
+}
+
+function ORIGINAL_GOOD_NO_SECTIONS_runFunc(){
+	var sFormat = getTextAreaValue("txaFuncFormat");
+	sFormat = replaceSubstring(sFormat, "^t", "\t");
+	setTextAreaValue("txaFuncFormat", sFormat);
+	var sIn = getTextAreaValue("txaIn");
+	var asIn = sIn.split("\n");
+	var sOut = "";
+	var sErrors = "";
+	// do cycle here
+	resetCycles();
+	sFormat = setCycleMarkers(sFormat);
+	for(var iLine = 0; iLine < asIn.length; iLine++){
+		if(asIn[iLine].charAt(asIn[iLine].length - 1) == "\r"){
+			asIn[iLine] = asIn[iLine].substring(0, asIn[iLine].length -1);
+		}
+		if(asIn[iLine].length != 0){
+			var asValues = asIn[iLine].split("$");
+			//a lert("asValues " + asValues);
+			var sTemp = sFormat;
+			var iBit = 0;
+			sTemp = replaceSubstring(sTemp, "$COUNTER{}", "" + (iLine + 1));
+			for(; iBit < asValues.length; iBit++){
+				sTemp = replaceSubstring(sTemp, "${" + iBit + "}", asValues[iBit]);
+			}
+			// Check if next value to look for is there...
+			if(sTemp.indexOf("${" + iBit + "}") != -1){
+				var sEss = (iBit > 1) ? "s" : "";
+				sErrors += "Line " + (iLine + 1) + " only has " + (iBit) + " value" + sEss + ", is missing some values.\n";
+			}
+			sOut += evaluateMod(sTemp) + "\n";
+		}
+	}
+	sOut = replaceCycleMarkers(sOut);
+	if(sErrors.length > 0){
+		alert(sErrors);
+	}
+	setTextAreaValue("txaOut", sOut);
+}
+
+var asCycle = new Array();
+var sCycleMarkerStart = "###CYCLE#$";
+var sCycleMarkerEnd = "$#CYCLE###";
+function resetCycles(){
+	asCycle = new Array();
+}
+function addCycle(sIn){
+	//a lert("Adding cycle " + sIn)
+	asCycle[asCycle.length] = sIn.split("$");
+}
+function setCycleMarkers(sFormat){
+	var iBrake = 0;
+	var iPosStart = sFormat.indexOf("$CYCLE{");
+	var iPosEnd = -1;
+	var iCycleCounter = 0;
+	while((iPosStart != -1) && (iBrake++ < 10)){
+		iPosEnd = sFormat.indexOf("}", iPosStart);
+		var sText = sFormat.substring((sFormat.indexOf("{", iPosStart) + 1), iPosEnd);
+		addCycle(sText);
+		sFormat = sFormat.substring(0, iPosStart) + sCycleMarkerStart + (asCycle.length - 1) + sCycleMarkerEnd + sFormat.substring(iPosEnd + 1);
+		iPosStart = sFormat.indexOf("$CYCLE{", iPosStart + sCycleMarkerStart.length + sCycleMarkerEnd.length);
+	}
+	return sFormat;
+}
+
+function replaceCycleMarkers(sIn){
+	for(var i = 0; i < asCycle.length; i++){
+		var sToken = (sCycleMarkerStart + i + sCycleMarkerEnd);
+		//sIn = replaceSubstring(sIn, sToken, "CYC" + i + "," + iE++);
+		var iPos = sIn.indexOf(sToken);
+		var iBrake = 0;
+		var iE = 0;
+		while((iPos != -1) && (iBrake++ < 1000)){
+			var asTokens = asCycle[i];
+			//var sReplaceToken = ("CYC[" + i + "," + iE + "]");
+			var sReplaceToken = getFromLoopedArray(asTokens, iE);
+			sIn = sIn.substring(0, iPos) + sReplaceToken + sIn.substring(iPos + sToken.length);
+			iPos = sIn.indexOf(sToken, (iPos + sToken.length));
+			iE++;
+		}
+	}
+	return sIn;
+}
+function getFromLoopedArray(as, iElement){
+	if (as.length == 0){
+		return "";
+	} else if (iElement < 0){
+		return "";
+	}
+	return as[iElement % as.length];
+}
+var asTest = new Array("first", "second", "last");
+var iTest = 0;
+getFromLoopedArray(asTest, iTest++);
+getFromLoopedArray(asTest, iTest++);
+getFromLoopedArray(asTest, iTest++);
+getFromLoopedArray(asTest, iTest++);
+getFromLoopedArray(asTest, iTest++);
+getFromLoopedArray(asTest, iTest++);
+getFromLoopedArray(asTest, iTest++);
+
+function runSort(){
+	var sSortOrder = getRadioValue("radSortOrder");
+	var sSortSelection = getSelectValue("selSortSelection");
+	//a lert("sort order " + sSortOrder + " selection " + sSortSelection);
+	var sDelimiter = "\n";
+	if(sSortSelection == "ByMarker"){
+		sDelimiter = g_form.txtSortMarker.value;
+	}
+	var asIn = getTextAreaValue("txaIn").split(sDelimiter);
+	var sSortSep = "*&*";
+	var isHasSortSelection = false;
+	if(sSortSelection == "AfterCharNum"){
+		isHasSortSelection = true;
+		var sSortAfter = g_form.txtSortMarker.value;
+		if(isNaN(sSortAfter)){
+			alert("Not a number");
+			return;
+		}
+		var iSortAfter = parseInt(g_form.txtSortMarker.value);
+		for(var i = 0; i < asIn.length; i++){
+			var sLine = cleanLine(asIn[i]);
+			if(sLine != ""){
+				var iSortAfterTemp = Math.min(iSortAfter, sLine.length);
+				//a lert(iSortAfter + " being set to " + iSortAfterTemp);
+				asIn[i] = sLine.substring(iSortAfterTemp).toLowerCase() + sSortSep + sLine;
+			}
+		}
+	} else if(sSortSelection == "AfterFirstIndex"){
+		isHasSortSelection = true;
+		var sSortAfter = g_form.txtSortMarker.value;
+		for(var i = 0; i < asIn.length; i++){
+			var sLine = cleanLine(asIn[i]);
+			if(sLine != ""){
+				var iFoundAt = sLine.indexOf(sSortAfter);
+				if(iFoundAt == -1){
+					asIn[i] = sLine.toLowerCase() + sSortSep + sLine;
+				} else {
+					asIn[i] = sLine.substring(iFoundAt + sSortAfter.length).toLowerCase() + sSortSep + sLine;
+				}
+			}
+		}
+	} else if(sSortSelection == "ByMarker"){
+		var sIn = getTextAreaValue("txaIn") + "\n";
+		var sSortMarkerVal = g_form.txtSortMarker.value;
+		sIn = replaceSubstring(sIn, "\r\n", "\n");
+		sIn = replaceSubstring(sIn, sSortMarkerVal + "\n", "\n" + sSortMarkerVal);
+		asIn = sIn.split(sSortMarkerVal);
+		//a lert(asIn.join("\n--------\n"));
+	} else {
+		isHasSortSelection = true;
+		for(var i = 0; i < asIn.length; i++){
+			asIn[i] = asIn[i].toLowerCase() + sSortSep + asIn[i];
+		}
+	}
+	//a lert(asIn.join("\n"));
+	asIn.sort();
+	if(sSortOrder == "Ascending"){
+		asIn.reverse();
+	}
+	if(isHasSortSelection){
+		for(var i = 0; i < asIn.length; i++){
+			asIn[i] = asIn[i].substring(asIn[i].indexOf(sSortSep) + sSortSep.length);
+		}
+	}
+	var sOutTemp = asIn.join(sDelimiter);
+	if(sSortSelection == "ByMarker"){
+		sOutTemp = replaceSubstring(sOutTemp, "\n" + sSortMarkerVal, sSortMarkerVal + "\n");
+	}
+	setTextAreaValue("txaOut", sOutTemp);
+}
+function getTextAreaValueAsArray(sFieldName){
+	var sVal = getTextAreaValue(sFieldName);
+	var asVal = sVal.split("\n");
+	for(var i = 0; i < asVal.length; i++){
+		asVal[i] = cleanLine(asVal[i]);
+	}
+	return asVal;
+}
+function escapeDollars(sIn){
+	return handleDollars(sIn, true);
+}
+function unescapeDollars(sIn){
+	return handleDollars(sIn, false);
+}
+function handleDollars(sIn, isEscape){
+	var sDollarLitteral = "^$";
+	var sDollar = "$";
+	if(isEscape){
+		//a lert(replaceSubstring(sIn, sDollarLitteral, g_sHiddenDollar));
+		return replaceSubstring(sIn, sDollarLitteral, g_sHiddenDollar);
+	} else {
+		//a lert(replaceSubstring(sIn, g_sHiddenDollar, sDollar));
+		return replaceSubstring(sIn, g_sHiddenDollar, sDollar);
+	}
+}
+//function escapeFormatChars(sIn){
+//	var sOut = replaceSubstring(sIn, "\t", "^t");
+//	return r eplaceSubstring(sOut, "\r\n", "^n");
+//	//return r eplaceSubstring(sOut, "$", "^$");
+//}
+//function unescapeFormatChars(sIn){
+//	var sOut = replaceSubstring(sIn, "^t", "\t");
+//	r eturn r eplaceSubstring(sOut,"^n", "\r\n");
+//	//r eturn r eplaceSubstring(sOut,"^$", g_sHiddenDollar);
+//}
+function runReplace(){
+	var sText = getTextAreaValue("txaIn");
+	//sText = escapeDollars(sText);
+	var sPairs = getTextAreaValue("txaReplacePairs");
+	var sPairs = escapeDollars(sPairs);
+	var asPairs = sPairs.split("\n");
+	//a lert(asPairs);
+	//var isTrim = (getRadioValue("radWithTrim") == "All");
+	var iTrimLeng = parseInt(getRadioValue("radWithTrim"));
+	var isTrim = iTrimLeng > 0;
+	iTrimLeng *= -1;
+	var iChangeCount = 0;
+	var aiChangeCount = new Array();
+	for(var i = 0; i < asPairs.length; i++){
+		var sSRTemp = replaceSubstring(asPairs[i],"^t","\t");
+		sSRTemp = replaceSubstring(sSRTemp,"^n","\r\n");
+		var asSR = replaceSubstring(sSRTemp,"^n","\n").split("$");
+		if(asSR.length == 1){
+			asSR[1] = "";
+		}
+		if(asSR[1].charCodeAt(asSR[1].length - 1) == 13){
+			asSR[1] = asSR[1].substring(0, (asSR[1].length - 1));
+		}
+		//a lert("replaceSubstring(\"" + sText + "\", \"" + asSR[0] + "\", \"" + asSR[1] + "\")");
+		var sFindTemp = unescapeDollars(asSR[0]);
+		var sReplaceTemp = unescapeDollars(asSR[1]);
+		g_iReplaceSubstringCounter = 0;
+		sText = replaceSubstring(sText, sFindTemp, sReplaceTemp);
+		iChangeCount += g_iReplaceSubstringCounter;
+		aiChangeCount[i] = g_iReplaceSubstringCounter;
+	}
+	if(isTrim){
+		//a lert(iTrimLeng + "[" + sText);
+		var asText = sText.split("\n");
+		for(var iL = 0; iL < asText.length; iL++){
+			asText[iL] = indentText(asText[iL], "\t", iTrimLeng);
+		}
+		sText = asText.join("\n");
+	}
+	var sText = unescapeDollars(sText);
+	log.replace(iChangeCount + " replacement" + ((iChangeCount == 1) ? "" : "s") + " made (" + (aiChangeCount.join(",")) + ").");
+	setTextAreaValue("txaOut", sText);
+}
+
+function Log(sLogDisplayObjectName){
+	this.logDisplayObjectName = sLogDisplayObjectName;
+	this.replace = function(sOut){
+		document.getElementById(this.logDisplayObjectName).innerHTML = sOut;
+	}
+	this.out = function(sOut){
+		var objOut = document.getElementById(this.logDisplayObjectName);
+		objOut.innerHTML += ((objOut.innerHTML == "") ? "" : "<br>") + sOut;
+	}
+}
+var log = new Log("replacePairsStatusBar");
+function runAppend(){
+	var sToAdd = getSelectValue("selAppendString");
+	if(sToAdd == "Other"){
+		sToAdd = prompt("Enter the text to append\nUse:^n for new-line, ^t for tab", "^t// ");
+		if((sToAdd == null) || (typeof sToAdd == undefined) || (sToAdd == "")){
+			return;
+		}
+	}
+	sToAdd = replaceSubstring(sToAdd, "^t", "\t");
+	sToAdd = replaceSubstring(sToAdd, "^n", "\n");
+	var asText = getTextAreaValue("txaIn").split("\n");
+	for(var iL = 0; iL < asText.length; iL++){
+		asText[iL] = indentText(asText[iL], sToAdd, 1);
+	}
+	g_form.txaIn.value = asText.join("\n");
+}
+
+function indentText(sIn, sCharToAdd, iCount){
+	if(iCount == 0){
+		return sIn;
+	}
+	if(iCount < 0){
+		//a lert("removing");
+		iCount *= -1;
+		var iChanged = 0;
+		while((iChanged < iCount) && ((sIn.charAt(0) == " ") || (sIn.charAt(0) == "\t"))){
+			sIn = sIn.substring(1);
+			iChanged++;
+		}
+	} else {
+		//a lert("adding");
+		for(var iAdd = 0; iAdd < iCount; iAdd++){
+			sIn = sCharToAdd + sIn;
+		}
+	}
+	return sIn;
+}
+function cleanLine(sIn){
+	if(sIn == ""){
+		return "";
+	}
+	var sCharAtEnd = sIn.charAt(sIn.length - 1);
+	var iNumAtEnd = sCharAtEnd.charCodeAt();
+	if((iNumAtEnd == 13) || (sCharAtEnd == "\r")){
+		sIn = sIn.substring(0, sIn.length - 1);
+	}
+	return sIn;
+}
+
+function getSelectValue(sFieldName){
+	var selTrg = g_form[sFieldName];
+	var iSelIndex = selTrg.selectedIndex;
+	return selTrg[iSelIndex].value;
+}
+
+// ===========================================================================
+// MOD STUFF
+var asMods = new Array("UPPERCASE","LOWERCASE","INNERCAPS","PROPERCASE","LEADUPPERCASE","LEADLOWERCASE","REPLACE");
+
+function evaluateMod(sIn){
+	var iPosLast = lastIndexOfAMod(sIn);
+	var iBrake = 0;
+	while((iPosLast != -1) && (iBrake++ < 1000)){
+		var sRealized = sIn.substring(iPosLast);
+		var iPosClose = getClosingBracketPosMod(sRealized) + 1;
+		sRealized = sRealized.substring(0, iPosClose);
+		sRealized = realizeMod(sRealized);
+		sIn = sIn.substring(0, iPosLast) + sRealized + sIn.substring(iPosLast + iPosClose);
+		//a lert("curr [" + sIn + "]");
+		iPosLast = lastIndexOfAMod(sIn);
+	}
+	return sIn;
+}
+
+function realizeMod(sIn) {
+	var sInstruction = sIn.substring(0, sIn.indexOf("{"));
+	var sText = sIn.substring(sIn.indexOf("{") + 1, sIn.length - 1);
+	if(sInstruction == "$UPPERCASE"){
+		sText = sText.toUpperCase();
+	} else if(sInstruction == "$LOWERCASE"){
+		sText = sText.toLowerCase();
+	} else if(sInstruction == "$INNERCAPS"){
+		sText = getAsInnerCaps(sText);
+	} else if(sInstruction == "$PROPERCASE"){
+		sText = sText.substring(0,1).toUpperCase() + sText.substring(1).toLowerCase();
+	} else if(sInstruction == "$LEADUPPERCASE"){
+		sText = sText.substring(0,1).toUpperCase() + sText.substring(1);
+	} else if(sInstruction == "$LEADLOWERCASE"){
+		sText = sText.substring(0,1).toLowerCase() + sText.substring(1);
+	} else if(sInstruction == "$REPLACE"){
+		var asText = sText.split("$");
+		sText = replaceSubstring(asText[0], asText[1], asText[2]);
+	}
+	return sText;
+}
+
+function getClosingBracketPosMod(sIn) {
+	var isCloseCurly = true;
+	var iPos = 0;
+	while(isCloseCurly){
+		var cTemp = sIn.charAt(iPos);
+		if(cTemp == '}'){
+			return iPos;
+		} else {
+			iPos++;
+		}
+	}
+	return iPos;
+}
+
+function lastIndexOfAMod(sIn) {
+	var iLast = -1;
+	for(var iMod = 0; iMod < asMods.length; iMod++){
+		var iModTemp = sIn.lastIndexOf(getMarkerMod(asMods[iMod]));
+		if(iModTemp > iLast){
+			iLast = iModTemp;
+		}
+	}
+	return iLast;
+}
+
+function getMarkerMod(sModName) {
+	return "$" + sModName + "{";
+}
+
+function setTemplateMod(selSrc){
+	var sOut = "";
+	if(selSrc.selectedIndex == 1){
+		var sVals = getTextAreaValue("txaIn").split("\n");
+		var iVars = sVals[0].split("$").length;
+		for(var i = 0; i < iVars; i++){
+			sOut += "${" + i + "} ";
+		}
+	} else if(selSrc.selectedIndex == 2){
+		/*
+		sOut += "\npublic $REPLACE{$REPLACE{$REPLACE{${1}$VARCHAR$String}$NUMBER$int}$DATE$java.util.Date} $INNERCAPS{$REPLACE{${0}$ $_}} = \"${1}\";";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}";
+		sOut += "\n$SECTION{}";
+		sOut += "\n/" + "**";
+		sOut += "\n * Return ${0} from DB col \"$UPPERCASE{$REPLACE{${0}$ $_}}\".";
+		sOut += "\n * $COUNTER{} $CYCLE{first$second$third$fourth} variable.";
+		sOut += "\n *" + "/";
+		sOut += "\npublic $REPLACE{$REPLACE{$REPLACE{${1}$VARCHAR$String}$NUMBER$int}$DATE$java.util.Date} get$LEADUPPERCASE{$INNERCAPS{$REPLACE{${0}$ $_}}}(){";
+		sOut += "\n\treturn this.$INNERCAPS{$REPLACE{${0}$ $_}};";
+		sOut += "\n}";
+		sOut += "\n/" + "**";
+		sOut += "\n * Set ${0}";
+		sOut += "\n *" + "/";
+		sOut += "\npublic void set$LEADUPPERCASE{$INNERCAPS{$REPLACE{${0}$ $_}}}($REPLACE{$REPLACE{$REPLACE{${1}$VARCHAR$String}$NUMBER$int}$DATE$java.util.Date} valToSet){";
+		sOut += "\n\tthis.$INNERCAPS{$REPLACE{${0}$ $_}} = valToSet;";
+		sOut += "\n}";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}/" + "**";
+		sOut += "\n * Create description of the state of the object.";
+		sOut += "\n * @return String containing all the fields, and their current values.";
+		sOut += "\n *" + "/";
+		sOut += "\nprivate String toString(){";
+		sOut += "\n\tStringBuffer sbOut = new StringBuffer();";
+		sOut += "\n$SECTION{}";
+		sOut += "\n\tsbOut.append(\"$INNERCAPS{$REPLACE{${0}$ $_}} [\").append(this.$INNERCAPS{$REPLACE{${0}$ $_}}).append(\"]\");";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}\treturn sbOut.toString();";
+		sOut += "\n}";
+		*/
+		sOut += "$NOREPEAT{}\n\t// Data Fields\n$SECTION{}\n\tprivate $REPLACE{$REPLACE{$REPLACE{${1}$VARCHAR$String}$NUMBER$int}$Date$java.util.Date} $INNERCAPS{$REPLACE{${0}$ $_}} = $REPLACE{$REPLACE{$REPLACE{${1}$String$\"\"}$int$0}$Date$null}; // Field to hold $REPLACE{${0}$ $-} value.";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}";
+		sOut += "\n$SECTION{} ";
+		sOut += "\n\t/" + "**";
+		sOut += "\n\t * Return ${0} from DB col USER_T.$UPPERCASE{$REPLACE{${0}$ $_}}.";
+		sOut += "\n\t * @return $INNERCAPS{$REPLACE{${0}$ $_}} ${1} representing the $REPLACE{${0}$ $-} value.";
+		sOut += "\n\t *" + "/";
+		sOut += "\n\tpublic $REPLACE{$REPLACE{$REPLACE{${1}$VARCHAR$String}$NUMBER$int}$Date$java.util.Date} get$LEADUPPERCASE{$INNERCAPS{$REPLACE{${0}$ $_}}}(){";
+		sOut += "\n\t\treturn this.$INNERCAPS{$REPLACE{${0}$ $_}};";
+		sOut += "\n\t}";
+		sOut += "\n";
+		sOut += "\n\t/" + "**";
+		sOut += "\n\t * Set ${0}";
+		sOut += "\n\t * @param valToSet, ${1} representing the $REPLACE{${0}$ $-} value.";
+		sOut += "\n\t *" + "/";
+		sOut += "\n\tpublic void set$LEADUPPERCASE{$INNERCAPS{$REPLACE{${0}$ $_}}}($REPLACE{$REPLACE{$REPLACE{${1}$VARCHAR$String}$NUMBER$int}$Date$java.util.Date} valToSet){";
+		sOut += "\n\t\tthis.$INNERCAPS{$REPLACE{${0}$ $_}} = valToSet;";
+		sOut += "\n\t}";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}\t/" + "**";
+		sOut += "\n\t * Create description of the state of the object.";
+		sOut += "\n\t * @return String containing all the fields, and their current values.";
+		sOut += "\n\t *" + "/";
+		sOut += "\n\tpublic String toString(){";
+		sOut += "\n\t\tStringBuffer sbOut = new StringBuffer();";
+		sOut += "\n$SECTION{}";
+		sOut += "\n\t\tsbOut.append(\"$INNERCAPS{$REPLACE{${0}$ $_}} [\").append(this.$INNERCAPS{$REPLACE{${0}$ $_}}).append(\"]\");";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}\t\treturn sbOut.toString();";
+		sOut += "\n\t}";
+	} else if(selSrc.selectedIndex == 3){
+		sOut += "\n$NOREPEAT{}\tObjectVO oVo = new ObjectVO();";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}";
+		sOut += "\n$SECTION{} ";
+		sOut += "\n\t/" + "**";
+		sOut += "\n\t * Set ${0}";
+		sOut += "\n\t * @param valToSet, ${1} representing the $REPLACE{${0}$ $-} value.";
+		sOut += "\n\t *" + "/";
+		sOut += "\n\tpublic void set$LEADUPPERCASE{$INNERCAPS{$REPLACE{${0}$ $_}}}($REPLACE{$REPLACE{$REPLACE{${1}$VARCHAR$String}$NUMBER$int}$Date$java.util.Date} valToSet){";
+		sOut += "\n\t\toVo.set$LEADUPPERCASE{$INNERCAPS{$REPLACE{${0}$ $_}}}(valToSet);";
+		sOut += "\n\t}";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}\t/" + "**";
+		sOut += "\n\t * Create description of the state of the object.";
+		sOut += "\n\t * @return String containing all the fields, and their current values.";
+		sOut += "\n\t *" + "/";
+		sOut += "\n\tpublic String toString(){";
+		sOut += "\n\t\tStringBuffer sbOut = new StringBuffer();";
+		sOut += "\n$SECTION{}";
+		sOut += "\n\t\tsbOut.append(\" [$INNERCAPS{$REPLACE{${0}$ $_}}=\").append(oVo.get$LEADUPPERCASE{$INNERCAPS{$REPLACE{${0}$ $_}}}()).append(\"]\");";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}\t\treturn sbOut.toString();";
+		sOut += "\n\t}";
+	} else if(selSrc.selectedIndex == 4){
+		sOut += "\tpublic $REPLACE{$REPLACE{${1}$VARCHAR$String}$NUMBER$int} $INNERCAPS{$REPLACE{${0}$ $_}} = $REPLACE{$REPLACE{${1}$VARCHAR$\"\"}$NUMBER$0}; // The ${0} value. DB col \"$UPPERCASE{$REPLACE{${0}$ $_}}\".";
+	} else if(selSrc.selectedIndex == 5){
+		sOut += "<A#>";
+		sOut += "\n\t<B#>${0}</B#>";
+		sOut += "\n\t<C#>${1}</C#>";
+		sOut += "\n\t<D#>${2}</D#>";
+		sOut += "\n\t<E#>${3}</E#>";
+		sOut += "\n</A#>";
+	} else if(selSrc.selectedIndex == 6){
+		sOut += "$NOREPEAT{}<root>\r\n";
+		sOut += "$SECTION{}\r\n";
+		sOut += "\t<$INNERCAPS{$REPLACE{${0}$ $_}}>${1}</$INNERCAPS{$REPLACE{${0}$ $_}}>\r\n";
+		sOut += "$SECTION{}\r\n";
+		sOut += "$NOREPEAT{}</root>";
+	} else if(selSrc.selectedIndex == 7){
+		sOut += "$NOREPEAT{}<select name=\"sel\" class=\"input-selectDefault\">\r\n";
+		sOut += "$SECTION{}\r\n";
+		sOut += "^t<option value=\"$INNERCAPS{$REPLACE{${0}$ $_}}\"$CYCLE{ selected$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$}>$LEADUPPERCASE{${0}}</option>";
+		sOut += "$SECTION{}\r\n";
+		sOut += "$NOREPEAT{}</select>";
+	} else if(selSrc.selectedIndex == 8){
+		sOut += "\t\t<property name=\"$INNERCAPS{$REPLACE{${0}$ $_}}\"";
+		sOut += " column=\"$UPPERCASE{$REPLACE{${0}$ $_}}\" />";
+	} else if(selSrc.selectedIndex == 9){
+		sOut += "$NOREPEAT{}c:";
+		sOut += "\ncd C:\\Data\\WebSphere_WebIR\\instr-service-deployment\\cmd";
+		sOut += "\n$SECTION{}";
+		sOut += "\nrename ${0} $REPLACE{${0}$.bat.$.cmd.}";
+		sOut += "\n$SECTION{}";
+		sOut += "\n$NOREPEAT{}";
+		sOut += "\npause";
+	} else if(selSrc.selectedIndex == 10){
+		sOut += "\n$NOREPEAT{}<html>";
+		sOut += "\n<" + "head>";
+		sOut += "\n<title>Code Generated Page</title>";
+		sOut += "\n<" + "style>";
+		sOut += "\nbody {";
+		sOut += "\nbackground-color: #888;";
+		sOut += "\n}";
+		sOut += "\n.imageSmall {";
+		sOut += "\nwidth: 30px;";
+		sOut += "\n}";
+		sOut += "\n.imageNormal {";
+		sOut += "\nwidth: auto;";
+		sOut += "\n}";
+		sOut += "\n</" + "style>";
+		sOut += "\n<" + "script>";
+		sOut += "\nfunction doOnClickImage(imgSrc){";
+		sOut += "\n\ttoggleImageSize(imgSrc);";
+		sOut += "\n}";
+		sOut += "\nfunction toggleImageSize(imgSrc){";
+		sOut += "\n\tif(imgSrc.className == \"imageNormal\"){";
+		sOut += "\n\t\timgSrc.className = \"imageSmall\";";
+		sOut += "\n\t} else {";
+		sOut += "\n\t\timgSrc.className = \"imageNormal\";";
+		sOut += "\n\t}";
+		sOut += "\n}";
+		sOut += "\nfunction doOnMouseoverImage(imgSrc){";
+		sOut += "\n\twindow.status = imgSrc.src;";
+		sOut += "\n}";
+		sOut += "\n</" + "script>";
+		sOut += "\n</" + "head>";
+		sOut += "\n<" + "body>";
+		sOut += "\n$SECTION{}";
+		sOut += "\n<img src=\"http://www.site.com/path/img${0}.jpg\" class=\"imageSmall\" onclick=\"doOnClickImage(this);\" onmouseover=\"doOnMouseoverImage(this);\"/>";
+		sOut += "\n$SECTION{}$NOREPEAT{}";
+		sOut += "</body>";
+		sOut += "\n</" + "html>";
+	}
+	setTextAreaValue("txaIn", "01\n02\n03\n04\n05\n06\n07\n08\n09\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30");
+	setTextAreaValue("txaFuncFormat", sOut);
+}
+
+function setShablonen(selSrc){
+	var sOut = "";
+	if(selSrc.selectedIndex == 1){ // HTML
+		sOut += "<html>";
+		sOut += "\n<head>";
+		sOut += "\n<title>Web Page</title>";
+		sOut += "\n<meta name=\"description\" content=\"Description\" /> ";
+		sOut += "\n<meta name=\"keywords\" content=\"Keywords\" /> ";
+		sOut += "\n<style type=\"text/css\">";
+		sOut += "\nbody, table, tr, td {";
+		sOut += "\n\tmargin:0px 0px 0px 0px;";
+		sOut += "\n\tfont-size:12px;";
+		sOut += "\n\tfont-family:Geneva, Arial, Helvetica, san-serif;";
+		sOut += "\n\tline-height:140%;";
+		sOut += "\n\tcolor:#FFF;";
+		sOut += "\n\tbackground:#848484; /" + "* url(bg_homeMetal.jpg) top left repeat-x; *" + "/";
+		sOut += "\n}";
+		sOut += "\ntable, td {";
+		sOut += "\n\tvertical-align: top;";
+		sOut += "\n}";
+		sOut += "\na, a:visited {";
+		sOut += "\n\tcolor: white;";
+		sOut += "\n\ttext-decoration: none;";
+		sOut += "\n}";
+		sOut += "\n</style>";
+		sOut += "\n<script>";
+		sOut += "\nfunction doOnLoad(){";
+		sOut += "\n}";
+		sOut += "\n</" + "s" + "cript>";
+		sOut += "\n<" + "!" + "-- s" + "cript src=\"HomeData.js\"><" + "/" + "script" + " --" + ">";
+		sOut += "\n<" + "/" + "head>";
+		sOut += "\n<body onload=\"doOnLoad();\">";
+		sOut += "\n<table class=\"table-main\" width=\"180\">";
+		sOut += "\n\t<tr>";
+		sOut += "\n\t\t<td class=\"\" style=\"\">";
+		sOut += "\n\t\t\t<div id=\"div-links\" class=\"\" style=\"\"></div>";
+		sOut += "\n\t\t</td>";
+		sOut += "\n\t</tr>";
+		sOut += "\n</table>";
+		sOut += "\n</body>";
+		sOut += "\n</html>";
+	} else if(selSrc.selectedIndex == 2){ // CSS
+		sOut += "<style type=\"text/css\">";
+		sOut += "\nbody, table, tr, td {";
+		sOut += "\n\tmargin:0px 0px 0px 0px;";
+		sOut += "\n\tfont-size:12px;";
+		sOut += "\n\tfont-family:Geneva, Arial, Helvetica, san-serif;";
+		sOut += "\n\tline-height:140%;";
+		sOut += "\n\tcolor:#FFF;";
+		sOut += "\n\tbackground:#848484 url(bg_homeMetal.jpg) top left repeat-x;";
+		sOut += "\n}";
+		sOut += "\ntable, td {";
+		sOut += "\n\tvertical-align: top;";
+		sOut += "\n}";
+		sOut += "\na, a:visited {";
+		sOut += "\n\tcolor: white;";
+		sOut += "\n\ttext-decoration: none;";
+		sOut += "\n}";
+		sOut += "\n</style>";
+	} else if(selSrc.selectedIndex == 3){ // XML
+		sOut += "<A#>";
+		sOut += "\n\t<B#>${0}</B#>";
+		sOut += "\n\t<C#>${1}</C#>";
+		sOut += "\n\t<D#>${2}</D#>";
+		sOut += "\n\t<E#>${3}</E#>";
+		sOut += "\n</A#>";
+	}
+	setTextAreaValue("txaShablonen", sOut);
+}
+
+function showClippy(iStep){
+	var iClippyTemp = iClippyCurr + iStep; //Math.max(0, (iClippyCurr + iStep));
+	if((iClippyTemp < 0) || (iClippyTemp >= asClippy.length)){
+		return;
+	}
+	iClippyCurr = iClippyTemp;
+	showClippyText(iClippyCurr);
+	showClippyInfo();
+}
+
+function showClippyText(){
+	var sTxt = "";
+	if((iClippyCurr >= 0) && (asClippy.length > 0)){
+		sTxt = asClippy[iClippyCurr];
+	}
+	g_form.txaClippy0.value = sTxt;
+}
+function showClippyInfo(){
+	if(iClippyCurr == -1){
+		sOut = "There are no clippies";
+		return;
+	}
+	var sOut = "Clippy " + (iClippyCurr + 1);
+	document.getElementById("span-clippyInfo").innerHTML = sOut;
+	document.getElementById("span-clippyCount").innerHTML = asClippy.length;
+}
+function appendClippy(sClippyNew){
+	if((sClippyNew == "") || sClippyNew == asClippy[asClippy.length - 1]){
+		return;
+	}
+	asClippy[asClippy.length] = sClippyNew;
+	iClippyCurr = asClippy.length - 1;
+	showClippyText();
+	showClippyInfo();
+}
+function removeCurrentClippy(){
+	if(asClippy.length > 0){
+		asClippy[iClippyCurr] = "";
+		removeEmptyClippies();
+	}
+}
+function removeEmptyClippies(){
+	var iOffset = 0;
+	var sOut = "";
+	for(var iC = 0; (iC + iOffset) < asClippy.length; iC++){
+		while(((iC + iOffset) < asClippy.length) && (asClippy[iC + iOffset] == "")){
+			iOffset++;
+		}
+		asClippy[iC] = asClippy[iC + iOffset];
+	}
+	asClippy.length = (asClippy.length - iOffset);
+	iClippyCurr--;
+	if(iClippyCurr >= asClippy.length){
+		iClippyCurr = asClippy.length - 1;
+	}
+	if((iClippyCurr < 0) && (asClippy.length > 0)){
+		iClippyCurr = 0;
+	}
+	showClippyText();
+	showClippyInfo();
+}
+function setSearchReplaceCaseGuesses(){
+	var sPairs = getTextAreaValue("txaReplacePairs");
+	var asPairs = getTextAreaValueAsArray("txaReplacePairs");
+	var asPairsLengthAtStart = asPairs.length;
+	for(var iP = 0; iP < asPairsLengthAtStart; iP++){
+		if(getCase(asPairs[iP]) == "UPPER"){
+			if(!isInArray(asPairs, asPairs[iP].toLowerCase())){
+				sPairs += "\n" + asPairs[iP].toLowerCase();
+			}
+		} else {
+			if(!isInArray(asPairs, asPairs[iP].toUpperCase())){
+				sPairs += "\n" + asPairs[iP].toUpperCase();
+			}
+		}
+	}
+	setTextAreaValue("txaReplacePairs", sPairs);
+}
+function isInArray(as, s){
+	for(var iE = 0; iE < as.length; iE++){
+		if(as[iE] == s){
+			return true;
+		}
+	}
+	return false;
+}
+function getCase(sIn){
+	var iUp = 0;
+	var iLow = 0;
+	for(var iC = 0; iC < sIn.length; iC++){
+		var cTemp = sIn.charAt(iC);
+		if(cTemp.toLowerCase() != cTemp){
+			iUp++;
+		} else if (cTemp.toUpperCase() != cTemp){
+			iLow++;
+		}
+	}
+	//a lert("up " + iUp + " low" + iLow);
+	if(iUp >= iLow){
+		return "UPPER";
+	} else {
+		return "LOWER";
+	}
+}
+
+function putRecycledContent(){
+	appendClippy(g_form.txaIn.value);
+	g_form.txaIn.value = g_form.txaOut.value;
+}
+function runSetReplaceValues(sType){
+	if(sType == "HTML"){
+		var sOut = "<!DOCTYPE HTML PUBLIC $<!doctype html public ";
+		sOut += "\n<HTML>$<html>";
+		sOut += "\n</HTML>$</html>";
+		sOut += "\n<HEAD>$<head>";
+		sOut += "\n<META $<meta ";
+		sOut += "\n<LINK $<link ";
+		sOut += "\n<TITLE>$<title>";
+		sOut += "\n</TITLE>$</title>";
+		sOut += "\n</HEAD>$</head>";
+		sOut += "\n<BODY>$<body>";
+		sOut += "\n<TABLE$<table";
+		sOut += "\n WIDTH=$ width=";
+		sOut += "\n ID=$ id=";
+		sOut += "\n NAME=$ name=";
+		sOut += "\n CLASS=$ class=";
+		sOut += "\n<DIV$<div";
+		sOut += "\n</DIV>$</div>";
+		sOut += "\n<SPAN$<span>";
+		sOut += "\n</SPAN>$</span>";
+		sOut += "\n<TR$<tr";
+		sOut += "\n<TD$<td";
+		sOut += "\n</TABLE>$</table>";
+		sOut += "\n</TR>$</tr>";
+		sOut += "\n</TD>$</td>";
+		sOut += "\n<P>$<p>";
+		sOut += "\n</P>$</p>";
+		sOut += "\n</BODY>$</body>";
+		setTextAreaValue("txaReplacePairs", sOut);
+	} else {
+		var sOut = "\\$/";
+		sOut += "\n/$\\";
+		setTextAreaValue("txaReplacePairs", sOut);
+	}
+}
+
+
+function runConvertFromSqlDescriptionToFields(){
+	//txtDobj_className
+	var txaFields = document.forms[0].txaDobj_fields;
+	var sT = txaFields.value.toLowerCase();
+	sT = recursiveReplaceSubstring(sT, "not null", "$");
+	sT = recursiveReplaceSubstring(sT, "\t", "$");
+	sT = recursiveReplaceSubstring(sT, " ", "$");
+	sT = recursiveReplaceSubstring(sT, "$$", "$");
+	sT = replaceSubstring(sT, "varchar2(", "String$");
+	sT = replaceSubstring(sT, "varchar(", "String$");
+	sT = replaceSubstring(sT, "number(", "int$");
+	sT = replaceSubstring(sT, ")", "");
+	sT = replaceSubstring(sT, "$\n", "\n");
+	txaFields.value = sT;
+}
+
+function runGenerateDataObject(){
+	var f = document.forms[0];
+	var sClassName = f.txtDobj_className.value;
+	if(sClassName.length == 0){
+		sClassName = "MyClass";
+	}
+	var aTextLine = f.txaDobj_fields.value.split("\n");
+	var adatafield = new Array();
+	for(var i = 0; i < aTextLine.length; i++){
+		aTextLine[i] = trim(aTextLine[i]);
+		if(aTextLine[i].length != 0){
+			adatafield[adatafield.length] = new DataField(aTextLine[i]);
+		}
+	}
+	var sOut = "";
+	if(f.txtDobj_createJavaStrutsForm.checked){
+		isOneBeingRun = true;
+		// Write the Form Class
+		sOut += "public class " + sClassName + "Form {\n\n";
+		// Write the private fields.
+		sOut += "\tprivate " + sClassName + "VO datavo = new " + sClassName + "VO(); // Data to hold the " + sClassName + " values.\n";
+		sOut += "\tprivate static final int TYPE_STRING = 0;\n";
+		sOut += "\tprivate static final int TYPE_INT = 1;\n";
+		sOut += "\tprivate static final int TYPE_DATE = 2;\n";
+		// Write the getters and setters.
+		for(var i = 0; i < adatafield.length; i++){
+			var row = adatafield[i];
+			sOut += "\n\t/**\n\t * " + row.description + ".\n\t */\n";
+			if(row.type == "String"){
+				sOut += "\tpublic " + row.type + " get" + toLeadUpperCase(row.name) + "(){\n";
+				sOut += "\t\treturn this.datavo.get" + toLeadUpperCase(row.name) + "();\n";
+				sOut += "\t}\n";
+				sOut += "\n\t/**\n\t * " + row.description + ".\n\t */\n";
+				sOut += "\tpublic void set" + toLeadUpperCase(row.name) + "(" + row.type + " sValToSet){\n";
+				sOut += "\t\tsValToSet = runValidation(\"" + row.name + "\", sValToSet, TYPE_" + row.type.toUpperCase() + ", " + row.minLength + ", " + row.maxLength + ");\n";
+				sOut += "\t\tthis.datavo.set" + toLeadUpperCase(row.name) + "(sValToSet);\n";
+				sOut += "\t}\n";
+			} else if(row.type == "int") {
+				sOut += "\tpublic String get" + toLeadUpperCase(row.name) + "(){\n";
+				sOut += "\t\treturn new Integer(this.datavo.get" + toLeadUpperCase(row.name) + "()).toString();\n";
+				sOut += "\t}\n";
+				sOut += "\n\t/**\n\t * " + row.description + ".\n\t */\n";
+				sOut += "\tpublic void set" + toLeadUpperCase(row.name) + "(String sValToSet){\n";
+				sOut += "\t\tint iValToSet = 0;\n";
+				sOut += "\t\ttry {\n";
+				sOut += "\t\t\tsValToSet = runValidation(\"" + row.name + "\", sValToSet, TYPE_" + row.type.toUpperCase() + ", " + row.minLength + ", " + row.maxLength + ");\n";
+				sOut += "\t\t\tiValToSet = Integer.parseInt(sValToSet);\n";
+				sOut += "\t\t} catch (Exception e){}\n";
+				sOut += "\t\tthis.datavo.set" + toLeadUpperCase(row.name) + "(iValToSet);\n";
+				sOut += "\t}\n";
+			}
+		}
+		sOut += "\n";
+
+		// Return the toString method.
+		sOut += "\n\t/**\n\t * Return the object in a format that can be easily read.\n\t */\n";
+		sOut += "\tpublic String toString(){\n";
+		sOut += "\t\treturn this.datavo.toString();\n";
+		sOut += "\t}\n";
+
+		// Return the reset method.
+		sOut += "\n\t/**\n\t * Reset the data to the original state.\n\t */\n";
+		sOut += "\tpublic String reset(){\n";
+		sOut += "\t\treturn this.datavo.reset();\n";
+		sOut += "\t}\n";
+
+		sOut += "\n\t/**\n\t * Validate each field according to its settings.\n\t */\n";
+		sOut += "\tprivate String runValidation(String sFieldName, String sToTest, int iType, int iMinLen, int iMaxLen){\n";
+		sOut += "\t\tif(sToTest == null){\n";
+		sOut += "\t\t\tsToTest = \"\";\n";
+		sOut += "\t\t}\n";
+		sOut += "\t\tif(sToTest.length() < iMinLen){\n";
+		sOut += "\t\t\t//saveError(sFieldName, sToTest, \"Value too short\")\";\n";
+		sOut += "\t\t}\n";
+		sOut += "\t\tif(sToTest.length() > iMaxLen){\n";
+		sOut += "\t\t\t//saveError(sFieldName, sToTest, \"Value too long\")\";\n";
+		sOut += "\t\t}\n";
+		sOut += "\t\tif(iType == TYPE_INT){\n";
+		sOut += "\t\t\tif(sToTest.length() == 0){\n";
+		sOut += "\t\t\t\tsToTest = \"0\";\n";
+		sOut += "\t\t\t} else {\n";
+		sOut += "\t\t\t\ttry {\n";
+		sOut += "\t\t\t\t\tInteger.parseInt(sToTest);\n";
+		sOut += "\t\t\t\t} catch (Exception e) {\n";
+		sOut += "\t\t\t\t\t//saveError(sFieldName, sToTest, \"Not a number\")\";\n";
+		sOut += "\t\t\t\t}\n";
+		sOut += "\t\t\t}\n";
+		sOut += "\t\t} else if(iType == TYPE_DATE){\n";
+		sOut += "\t\t} else {\n";
+		sOut += "\t\t}\n";
+		sOut += "\t\treturn sToTest;\n";
+		sOut += "\t}\n";
+		sOut += "}\n";
+	}
+	if(f.txtDobj_createJavaVO.checked){
+		// WRITE THE VO CLASS ===========================================================
+		var isIntAsInteger = document.forms[0].txtDobj_setting_intAsInteger.checked;
+		//a lert(isIntAsInteger);
+		sOut += "\n/**\n * " + sClassName + " Value Object.\n */\n";
+		sOut += "public class " + sClassName + "VO {\n\n";
+		// Write the private fields.
+		for(var i = 0; i < adatafield.length; i++){
+			var row = adatafield[i];
+			sOut += "\tprivate " + row.type + " " + row.name + " = " + row.defaultValue;
+			sOut += "; // " + row.description + " \n";
+		}
+		// Write the getters and setters.
+		for(var i = 0; i < adatafield.length; i++){
+			var row = adatafield[i];
+			sOut += "\n\t/**\n\t * " + row.description + ".\n\t */\n";
+			sOut += "\tpublic ";
+			if((row.type == "int") && (isIntAsInteger)){
+				sOut += "Integer";
+			} else {
+				sOut += row.type;
+			}
+			sOut += " get" + toLeadUpperCase(row.name) + "(){\n";
+
+			if((row.type == "int") && (isIntAsInteger)){
+				sOut += "\t\treturn new Integer(this." + row.name + ");\n";
+			} else {
+				sOut += "\t\treturn this." + row.name + ";\n";
+			}
+
+
+			sOut += "\t}\n";
+			sOut += "\n\t/**\n\t * " + row.description + ".\n";
+			sOut += "\t * @param valToSet The " + row.description + " value.\n";
+			sOut += "\t */\n";
+			sOut += "\tpublic void set" + toLeadUpperCase(row.name) + "(";
+			if((row.type == "int") && (isIntAsInteger)){
+				sOut += "Integer";
+			} else {
+				sOut += row.type;
+			}
+			sOut += " valToSet){\n";
+
+
+			if((row.type == "int") && (isIntAsInteger)){
+				sOut += "\t\tif(valToSet == null){\n";
+				sOut += "\t\t\tthis." + row.name + " = 0;\n";
+				sOut += "\t\t} else {\n";
+				sOut += "\t\t\tthis." + row.name + " = Integer.valueOf(valToSet);\n";
+				sOut += "\t\t}\n";
+			} else {
+				sOut += "\t\tthis." + row.name + " = valToSet;\n";
+			}
+
+
+
+
+			sOut += "\t}\n";
+		}
+
+		// Write the toString Method
+		sOut += "\n\t/**\n\t * Convert the object to an easily readble string.\n\t */";
+		sOut += "\n\tpublic String toString(){\n";
+		sOut += "\t\treturn \"" + sClassName + ":\"";
+		for(var i = 0; i < adatafield.length; i++){
+			var row = adatafield[i];
+			sOut += "\n\t\t+ \"[" + row.name + ":\" + this." + row.name + " + \"]\"";
+		}
+		sOut += ";\n";
+		sOut += "\t}\n";
+
+
+		// Write the reset Method
+		sOut += "\n\t/**\n\t * Reset all the values in the object.\n\t */";
+		sOut += "\n\tpublic void reset(){\n";
+		for(var i = 0; i < adatafield.length; i++){
+			var row = adatafield[i];
+			sOut += "\t\tthis." + row.name + " = " + row.defaultValue + ";\n";
+		}
+		sOut += "\t}\n";
+
+		sOut += "}";
+	}
+	if(f.txtDobj_createSqlSelect.checked){
+		// Create SQL to get the data.
+		sOut += "\t<!--\n";
+		sOut += "\tGet the " + sClassName + ".\n";
+		sOut += "\t-->\n";
+		sOut += "\t<bean type=\"Matchup_" + sClassName + "_Retrieve\">\n";
+		sOut += "\t\t<selection attribute=\"" + sClassName.toLowerCase() + "_id\"/>\n";
+		for(var i = 0; i < adatafield.length; i++){
+			var row = adatafield[i];
+			if(row.dbColumn != "id"){
+				sOut += "\t\t<selection attribute=\"" + row.dbColumn + "\"/>\n";
+			}
+		}
+		sOut += "\t\t<cachequery>\n";
+		sOut += "\t\t\t<query>\n";
+		sOut += "\t\t\t\tselect ";
+		for(var i = 0; i < adatafield.length; i++){
+			var row = adatafield[i];
+			if(row.dbColumn != "id"){
+				sOut += ((i == 0) ? "" : "\t\t\t\t, ") + row.dbColumn + "\n";
+			} else {
+				sOut += ((i == 0) ? "" : "\t\t\t\t, ") + row.dbColumn + " as " + sClassName.toLowerCase() + "_id\n";
+			}
+		}
+		sOut += "\t\t\t\tfrom " + sClassName.toLowerCase() + "_t\n";
+		sOut += "\t\t\t\twhere " + sClassName.toLowerCase() + "_id = <param input=\"" + sClassName.toLowerCase() + "_id\"/>\n";
+		sOut += "\t\t\t</query>\n";
+		sOut += "\t\t</cachequery>\n";
+		sOut += "\t</bean>\n";
+		sOut += "\n\t<!-- Attributes for " + sClassName + " -->\n";
+		sOut += "\t<attribute name=\"" + sClassName.toLowerCase() + "_id\" type=\"int\"/>\n";
+		for(var i = 0; i < adatafield.length; i++){
+			var row = adatafield[i];
+			if(row.dbColumn != "id"){
+				sOut += "\t<attribute name=\"" + row.dbColumn + "\" type=\"" + ((row.type.indexOf("java.util") != -1) ? "date" : row.type) + "\"/>\n";
+			}
+		}
+	}
+	if(f.txtDobj_createSqlInsert.checked){
+		sOut += "\n\n\ntxtDobj_createSqlInsert is not implemented yet.\n\n\n\n\n";
+	}
+	if(f.txtDobj_createHtmlForm.checked){
+		sOut += "\t<table cellpadding=\"0\" cellspacing=\"0\" class=\"table-form\">\n";
+		for(var i = 0; i < adatafield.length; i++){
+			var row = adatafield[i];
+			sOut += "\t\t<tr>\n";
+			sOut += "\t\t\t<td class=\"td-formLabel\">" + row.description + ":</td>\n";
+			sOut += "\t\t\t<td class=\"td-formValue\"><input type=\"text\" name=\"" + row.name + "\" maxlength=\"" + row.maxLength + "\" class=\"textInput-default\"/></td>\n";
+			sOut += "\t\t</tr>\n";
+		}
+		sOut += "\t</table>\n";
+	}
+	if(f.txtDobj_createChampionBean.checked){
+		sOut += "\n\t\tIManager manager = ManagerBroker.getManager();";
+		sOut += "\n\t\tQueryInfo qi = new QueryInfo(sSqlBeanToUse);";
+		sOut += "\n\t\tqi.set(\"" + sClassName.toLowerCase() + "_id\", i" + sClassName + "Id);";
+		sOut += "\n\t\tlog.trace(\"[conferenceId:\" + i" + sClassName + "Id + \"]\");";
+		sOut += "\n\t\tlog.trace(manager.getQuery(qi));";
+		sOut += "\n\t\tChampionBean cbRawFetch = manager.fetch(qi);";
+		sOut += "\n\t\t// Option 1";
+		sOut += "\n\t\tArrayList<String[]> alOut = new ArrayList<String[]>();";
+		sOut += "\n\t\t// Option 2";
+		sOut += "\n\t\tArrayList<" + sClassName + "VO> alOut = new ArrayList<" + sClassName + "VO>();";
+		sOut += "\n\t\tfor(int iCB = 0; iCB < cbRawFetch.size(); iCB++){";
+		sOut += "\n\t\t\tChampionBean cbTemp = cbRawFetch.getBean(iCB);";
+
+		sOut += "\n\t\t\t// Option 1\n/*";
+		for(var i = 0; i < adatafield.length; i++){
+			var row = adatafield[i];
+			if(row.type == "String"){
+				sOut += "\n\t\t\tString s" + toLeadUpperCase(row.name) + " = cbTemp.stringValue(\"" + row.dbColumn + "\", " + row.defaultValue + ");";
+			} else if(row.type == "int"){
+				sOut += "\n\t\t\tString s" + toLeadUpperCase(row.name) + " = Integer.toString(cbTemp.intValue(\"" + row.dbColumn + "\", " + row.defaultValue + "));";
+			} else {
+				sOut += "\n\t\t\tString s" + toLeadUpperCase(row.name) + " = cbTemp.stringValue(\"" + row.dbColumn + "\", " + row.defaultValue + ");";
+			}
+		}
+
+		sOut += "\n\t\t\talOut.add(new String[]{";
+		for(var i = 0; i < adatafield.length; i++){
+			var row = adatafield[i];
+			sOut += ((i == 0) ? "" : ", ") + "s" + toLeadUpperCase(row.name) + "";
+		}
+		sOut += "});\n*/";
+
+
+
+		sOut += "\n\t\t\t// Option 222222222222222";
+		sOut += "\n\t\t\t" + sClassName + "VO " + sClassName.toLowerCase() + "voTemp = new " + sClassName + "VO();";
+		for(var i = 0; i < adatafield.length; i++){
+			var row = adatafield[i];
+			sOut += "\n\t\t\t" + sClassName.toLowerCase() + "voTemp.set" + toLeadUpperCase(row.name) + "(cbTemp." + row.type.toLowerCase() + "Value(\"" + row.dbColumn + "\", " + row.defaultValue + "));";
+		}
+
+		sOut += "\n\t\t\talOut.add(" + sClassName.toLowerCase() + "voTemp);";
+
+
+		sOut += "\n\t\t}";
+		sOut += "\n";
+	}
+	alert(sOut.length);
+	if(sOut.length == 0){
+		sOut = "No templates selected.";
+	}
+	f.txaOut.value = sOut;
+}
+
+//name="txtDobj_setting_intAsInteger" onchange="doOnChangeTxtDobjSetting()"
+
+var g_asTxtDobjFieldsCookieName = "txtDobjChecked";
+var g_asTxtDobjSettingFieldsCookieName = "txtDobjSettingChecked";
+
+var g_asTxtDobjFields = new Array("createJavaStrutsForm", "createJavaVO"
+	, "createSqlSelect", "createSqlInsert"
+	, "createHtmlForm", "createChampionBean");
+var g_asTxtDobjSettingFields = new Array("intAsInteger");
+
+function doOnChangeTxtDobj(){
+	var sOffOn = "";
+	for(var i = 0; i < g_asTxtDobjFields.length; i++){
+		if(i != 0){
+			sOffOn += ",";
+		}
+		sOffOn += ((document.forms[0]["txtDobj_" + g_asTxtDobjFields[i]].checked) ? "Y" : "N");
+	}
+	setCookie(g_asTxtDobjFieldsCookieName, sOffOn);
+}
+
+function doOnChangeTxtDobjSetting(){
+	var sOffOn = "";
+	for(var i = 0; i < g_asTxtDobjSettingFields.length; i++){
+		if(i != 0){
+			sOffOn += ",";
+		}
+		sOffOn += ((document.forms[0]["txtDobj_setting_" + g_asTxtDobjSettingFields[i]].checked) ? "Y" : "N");
+	}
+	setCookie(g_asTxtDobjSettingFieldsCookieName, sOffOn);
+}
+
+function resumeCheckedTxtDobj(){
+	var sOffOn = getCookie(g_asTxtDobjFieldsCookieName);
+	var asOffOn = sOffOn.split(",");
+	for(var i = 0; i < g_asTxtDobjFields.length; i++){
+		//a lert(document.forms[0]["txtDobj_" + g_asTxtDobjFields[i]].checked);
+		document.forms[0]["txtDobj_" + g_asTxtDobjFields[i]].checked = (asOffOn[i] == "Y");
+	}
+	//a lert(sOffOn);
+}
+
+function resumeCheckedTxtDobjSetting(){
+	var sOffOn = getCookie(g_asTxtDobjSettingFieldsCookieName);
+	var asOffOn = sOffOn.split(",");
+	for(var i = 0; i < g_asTxtDobjSettingFields.length; i++){
+		document.forms[0]["txtDobj_setting_" + g_asTxtDobjSettingFields[i]].checked = (asOffOn[i] == "Y");
+	}
+}
+
+function DataField(sIn){
+	var aRaw = (sIn.split("\r").join("").split("\n").join("") + "$$$").split("$");
+	this.dbColumn = aRaw[0];
+	this.type = aRaw[1];
+	this.minLength = ((aRaw[3].length > 0) ? parseInt(aRaw[3]) : 0);
+	this.maxLength = 500;
+	var sMaxLength = aRaw[2];
+	if(sMaxLength.length > 0){
+		sMaxLength = (sMaxLength + ",").split(",")[0];
+		this.maxLength = parseInt(sMaxLength);
+	}
+	this.defaultValue = "\"\"";
+	if(this.type == "string"){
+		this.type = "String";
+	} else if(this.type == "int"){
+		this.defaultValue = "0";
+	} else if(this.type == "byte"){
+		this.defaultValue = "0";
+	} else if(this.type == "short"){
+		this.defaultValue = "0";
+	} else if(this.type == "boolean"){
+		this.defaultValue = "false";
+	} else if(this.type == "date"){
+		this.type = "java.util.Date";
+		this.defaultValue = "new java.util.Date()";
+	}
+	this.name = getAsInnerCaps(this.dbColumn);
+	this.description = toLeadUpperCase(this.dbColumn.split("_").join(" "));
+}
+
+function toLeadUpperCase(sIn){
+	return sIn.substring(0,1).toUpperCase() + sIn.substring(1);
+}
+
+// ===========================================================================
+</script>
+</head>
+<body onLoad="runOnLoad();">
+<form>
+<table style="margin-top: 2px;margin-left: 2px;width: 98%;" cellpadding="2" cellspacing="0">
+	<tr>
+		<td class="table-tab-on" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-String">
+			Create string
+		</td>
+		<td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-DeString">
+			To text
+		</td>
+		<td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Cap">
+			Captialization
+		</td>
+		<td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Func">
+			Functionize
+		</td>
+		<td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Sort">
+			Sorterize
+		</td>
+		<td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Replace">
+			Replace
+		</td>
+		<td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Shablonen">
+			Shablonen
+		</td>
+		<td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-DataObject">
+			Data Object
+		</td>
+		<td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Clippy">
+			Clippy (<span id="span-clippyCount">0</span>)
+		</td>
+		<td class="table-tab-off" style="border-top:none;border-right:none;">
+			&nbsp;
+		</td>
+	</tr>
+</table>
+<table class="table-main" style="margin-left: 2px;width: 98%;">
+	<tr>
+		<td style="width:100%;">
+			<span id="span-String">
+				<table border="0">
+				<tr>
+				<td style="width: 400px;">
+				<input type="radio" name="radType" value="String" onChange="setVarName(this.name)" onClick="setVarName(this.name)" onBlur="setVarName(this.name)" CHECKED>String &nbsp;
+				<input type="radio" name="radType" value="StringBuffer" onChange="setVarName(this.name)" onClick="setVarName(this.name)" onBlur="setVarName(this.name)">String Buffer<br>
+				Escape backslashes <input type="radio" name="radEscape" value="Yes" onChange="setVarName(this.name)" onClick="setVarName(this.name)" onBlur="setVarName(this.name)" CHECKED>Yes&nbsp;
+				<input type="radio" name="radEscape" value="No" onChange="setVarName(this.name)" onClick="setVarName(this.name)" onBlur="setVarName(this.name)">No<br>
+				Var name <input type="text" name="txtVarName" value="sOut">
+				Nr of indents <input type="text" name="txtIndentCount" value="2" style="width: 40">
+				</td>
+				<td style="vertical-align: bottom;">
+				<input type="button" value="Generate Code" onClick="runStringGeneration();" class="button-default">
+				</td>
+				</tr>
+				</table>
+			</span>
+			<span id="span-DeString" style="display: none;">
+				<input type="button" value="De String" onClick="runDeString();" class="button-default">
+			</span>
+			<span id="span-Cap" style="display: none;">
+				<table border="0">
+				<tr>
+				<td style="width: 400px;">
+					<input type="radio" name="radTypeCase" value="UpperCase" CHECKED>UpperCase
+					<input type="radio" name="radTypeCase" value="LowerCase">LowerCase<br>
+					<input type="radio" name="radTypeCase" value="GuessCase">Guess Case<br>
+					<input type="radio" name="radTypeCase" value="InnerCaps">InnerCaps
+					<input type="radio" name="radTypeCase" value="Underscore">Underscore<br>
+				</td>
+				<td style="vertical-align: bottom;">
+					<input type="button" value="Re-capitalize" onClick="runReCapitalize();" class="button-default">
+					<input type="button" value="- Put contents" onClick="putRecycledContent();" class="button-default"/>
+				</td>
+				</tr>
+				</table>
+			</span>
+			<span id="span-Func" style="display: none;">
+				<table border="0">
+				<tr>
+				<td style="width: 78%">
+					<textarea name="txaFuncFormat" class="txa-func">public $REPLACE{$REPLACE{$REPLACE{${1}$VARCHAR$String}$NUMBER$int}$DATE$java.util.Date} $INNERCAPS{$REPLACE{${0}$ $_}} = "${1}";
+$SECTION{}
+$NOREPEAT{}
+$SECTION{}
+/**
+ * Return ${0} from DB col "$UPPERCASE{$REPLACE{${0}$ $_}}".
+ * $COUNTER{} $CYCLE{first$second$third$fourth} variable.
+ */
+public $REPLACE{$REPLACE{$REPLACE{${1}$VARCHAR$String}$NUMBER$int}$DATE$java.util.Date} get$LEADUPPERCASE{$INNERCAPS{$REPLACE{${0}$ $_}}}(){
+	return this.$INNERCAPS{$REPLACE{${0}$ $_}};
+}
+/**
+ * Set ${0}
+ */
+public void set$LEADUPPERCASE{$INNERCAPS{$REPLACE{${0}$ $_}}}($REPLACE{$REPLACE{$REPLACE{${1}$VARCHAR$String}$NUMBER$int}$DATE$java.util.Date} valToSet){
+	this.$INNERCAPS{$REPLACE{${0}$ $_}} = valToSet;
+}
+$SECTION{}
+$NOREPEAT{}
+$SECTION{}
+$NOREPEAT{}/**
+ * Create description of the state of the object.
+ * @return String containing all the fields, and their current values.
+ */
+private String toString(){
+	StringBuffer sbOut = new StringBuffer();
+$SECTION{}
+	sbOut.append("$INNERCAPS{$REPLACE{${0}$ $_}} [").append(this.$INNERCAPS{$REPLACE{${0}$ $_}}).append("]");
+$SECTION{}
+$NOREPEAT{}	return sbOut.toString();
+}</textarea>
+<input type="button" value="Save To Clippy" onClick="appendClippy(g_form.txaFuncFormat.value)" class="button-default">
+				</td>
+				<td style="vertical-align: bottom;" class="txt-small">
+					<script>
+					var sOut = "Use ${0} to get \"$\" separated values<br>";
+					sOut += "Use $COUNTER{} to display the group nr.<br>";
+					sOut += "Use $SECTION{} to create output blocks.<br>";
+					sOut += "Use $NOREPEAT{} to output a section only once.<br>";
+					sOut += "<br>";
+					sOut += "To manipulate values, use the following:<br>";
+					for(var i = 0; i < asMods.length; i++){
+						sOut += getMarkerMod(asMods[i]) + "&lt;value&gt;";
+						if(i == (asMods.length - 1)){
+							sOut += "$&lt;find&gt;$&lt;replace&gt;";
+						}
+						sOut += "}<br>";
+					}
+					sOut += "<br>";
+					document.write(sOut);
+					</script>
+					<select name="selFuncTemplates" onChange="setTemplateMod(this)">
+					<option value="">--</option>
+					<option value="">Simple</option>
+					<option value="">Java Class</option>
+					<option value="">Java Struts Action</option>
+					<option value="">Declare member vars</option>
+					<option value="">XML (values)</option>
+					<option value="">XML (nodes)</option>
+					<option value="">HTML Select</option>
+					<option value="">Hibernate property</option>
+					<option value="">BAT Rename Files</option>
+					<option value="">Image Display Page</option>
+					</select> Templates<br>
+					<input type="button" value="Functionize" onClick="runFunc();" class="button-default">
+				</td>
+				</tr>
+				</table>
+			</span>
+			<span id="span-Sort" style="display: none;">
+				<table border="0">
+				<tr>
+				<td style="width: 150px;">
+					<input type="radio" name="radSortOrder" value="Descending" checked>Descending<br>
+					<input type="radio" name="radSortOrder" value="Ascending">Ascending<br>
+				</td>
+				<td style="width: 200px;">
+					<select name="selSortSelection">
+						<option value="Natural" selected>Natural</option>
+						<option value="AfterCharNum">After Character number</option>
+						<option value="AfterFirstIndex">After first index of</option>
+						<option value="ByMarker">By marker</option>
+					</select>
+					<input type="text" name="txtSortMarker" value="3">
+				</td>
+				<td style="vertical-align: bottom;">
+					<input type="button" value="  Sort  " onClick="runSort();" class="button-default">
+				</td>
+				</tr>
+				</table>
+			</span>
+			<span id="span-Replace" style="display: none;">
+				<table border="0" style="width: 100%;">
+				<tr>
+				<td style="width: 180px;">
+					<div class="area-buttonGroup">Trim<br>
+					<input type="radio" name="radWithTrim" value="0" checked>None
+					<input type="radio" name="radWithTrim" value="1">One<br>
+					<input type="radio" name="radWithTrim" value="4">Four
+					<input type="radio" name="radWithTrim" value="1000">All<br>
+					</div>
+					<div class="area-buttonGroup" style="width: 100%">
+					<input type="button" value="Guess Case" onClick="setSearchReplaceCaseGuesses()" class="button-default" style="margin-left: 0px;width: 120px;margin-top: 2px;">
+					<input type="button" value="Multiple returns" onClick="g_form.txaReplacePairs.value = '^n^n^n^n^n^n^n^n$^n\n^n^n^n^n$^n\n^n^n^n$^n\n^n^n$^n\n^n^n$^n'" class="button-default" style="margin-left: 0px;width: 120px;margin-top: 2px;">
+					<input type="button" value="Html L.Case" onClick="runSetReplaceValues('HTML');" class="button-default" style="margin-left: 0px;width: 120px;margin-top: 2px;">
+					<input type="button" value="Slash - Backslash" onClick="runSetReplaceValues('slash');" class="button-default" style="margin-left: 0px;width: 120px;margin-top: 2px;">
+					</div>
+					<div class="area-buttonGroup" style="width: 100%">
+					<input type="button" value="Append" onClick="runAppend();" class="button-default"
+					style="margin-left: 0px;width: 60px;"><select name="selAppendString" style="background-color:#E6E9DF;border:1px solid black;">
+						<option value="^t" selected>Tab</option>
+						<option value="^n">Return</option>
+						<option value=" ">Space</option>
+						<option value="Other">Other...</option>
+					</select>
+					</div>
+					<div class="area-buttonGroup" style="width: 100%">
+					<input type="button" value="Save To Clippy" onClick="appendClippy(g_form.txaReplacePairs.value)" class="button-default">
+					</div>
+				</td>
+				<td style="">
+					<textarea style="width: 100%;height: 200px;" name="txaReplacePairs">  $
+^t^t$^t
+^n^n$^n</textarea>
+<div id="replacePairsStatusBar" class="area-buttonGroup codeWindow">Enter Values in field above, then press Replace</div>
+				</td>
+				<td style="vertical-align: bottom;width: 200px;">
+					<div class="txt-small">
+Enter find$replace strings on each line.<br>
+Each pair is completed before the next starts, so a chain of find-replaces can be done.<br>
+<br>
+To replace special characters, use:<br>
+					^n for new-line<br>
+					^t for tab<br>
+					^$ for $<br>&nbsp;</div>
+					<input type="button" value="  Replace  " onClick="runReplace();" class="button-default">
+					<input type="button" value="- Put contents" onClick="putRecycledContent();" class="button-default"/>
+				</td>
+				</tr>
+				</table>
+			</span>
+			<span id="span-Shablonen" style="display: none;">
+				<table border="0" style="width: 100%;">
+				<tr>
+				<td style="width: 90%">
+					<textarea name="txaShablonen" class="txa-func" style="height: 500px;"></textarea>
+				</td>
+				<td style="vertical-align: bottom;" class="txt-small">
+					Templates<br>
+					<select name="selShablonen" onChange="setShablonen(this)">
+					<option value="">--</option>
+					<option value="">HTML</option>
+					<option value="">CSS</option>
+					<option value="">XML</option>
+					</select><br>
+				</td>
+				</tr>
+				</table>
+			</span>
+			<span id="span-DataObject" style="display: none;">
+				<table border="0" style="width: 100%;">
+					<tr>
+						<td>
+							Class Name
+						</td>
+						<td style="width: 90%">
+							<input type="text" name="txtDobj_className" class=""/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							Objects:
+						</td>
+						<td style="width: 90%">
+							<input type="checkbox" name="txtDobj_createJavaStrutsForm" onchange="doOnChangeTxtDobj()">Java Struts Form</checkbox>
+							<input type="checkbox" name="txtDobj_createJavaVO" onchange="doOnChangeTxtDobj()">Java Value Object</checkbox>
+							<input type="checkbox" name="txtDobj_createSqlSelect" onchange="doOnChangeTxtDobj()">SQL Select</checkbox>
+							<input type="checkbox" name="txtDobj_createSqlInsert" onchange="doOnChangeTxtDobj()">SQL Insert</checkbox>
+							<input type="checkbox" name="txtDobj_createHtmlForm" onchange="doOnChangeTxtDobj()">HTML Form</checkbox>
+							<input type="checkbox" name="txtDobj_createChampionBean" onchange="doOnChangeTxtDobj()">Champion Bean</checkbox>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							Objects:
+						</td>
+						<td style="width: 90%">
+							<input type="checkbox" name="txtDobj_setting_intAsInteger" onchange="doOnChangeTxtDobjSetting()">Present int as Integer</checkbox>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							Fields
+							<div class="txt-small">Use format:<br/>
+							column_name$type$max-length[$min-length]<br/>
+							EG:<br/>
+							user_id$int$10<br/>
+							EG:<br/>
+							user_name$String$10$1</div><br/>
+							<br/>
+							<input type="button" class="button-default" value="Convert Description" onclick="runConvertFromSqlDescriptionToFields()">
+							<div class="txt-small">Cut and paste from the database values, then use this to format the data.</div>
+						</td>
+						<td style="width: 90%">
+							<textarea name="txaDobj_fields" class="txa-func" style="height: 300px;width:500px;">
+start_round_no$int$38
+current_round_id$int$38
+usquad_name$String$38
+uleague_name$String$38
+fantasy_points$int$38
+current_contributed_points$int$38
+</textarea>
+							<input type="button" class="button-default" value="Create Code" onclick="runGenerateDataObject()">
+						</td>
+					</tr>
+				</table>
+			</span>
+			<span id="span-Clippy" style="display: none;">
+				<table border="0" width="99%">
+				<tr>
+				<td>
+					<textarea class="txa-output" name="txaClippy0"></textarea>
+				</td>
+				</tr>
+				<tr>
+				<td style="vertical-align: bottom;">
+					<span class="area-buttonGroup">
+					<input type="button" value=" - Prev  " onClick="showClippy(-1);" class="button-default">
+					<span class="txt-small" id="span-clippyInfo">There are no clippies</span>
+					<input type="button" value="  Next - " onClick="showClippy(1);" class="button-default">
+					</span> &nbsp; &nbsp;
+					<span class="area-buttonGroup">
+					<!-- input type="button" value="Debug" onClick="doClippyDebug();" -->
+					<input type="button" value="  Update  " onClick="asClippy[iClippyCurr] = g_form.txaClippy0.value;" class="button-default">&nbsp;
+					<input type="button" value=" Save New " onClick="appendClippy(g_form.txaClippy0.value);" class="button-default">&nbsp;
+					<input type="button" value=" Remove " onClick="removeCurrentClippy();" class="button-default">
+					</span>
+				</td>
+				</tr>
+				</table>
+			</span>
+		</td>
+	</tr>
+	<tr>
+		<td width="500" class="table-main">
+		</td>
+		<td width="500" class="table-main">
+		</td>
+	</tr>
+</table>
+<table class="table-main" style="margin-left: 2px;width: 98%;" id="table-inAndOutFields">
+	<tr>
+		<td width="49%">
+				<textarea name="txaIn" class="txa-output">first name$VARCHAR
+company id$NUMBER
+date of birth$DATE
+</textarea><input type="button" value="Save To Clippy" onClick="appendClippy(g_form.txaIn.value)" class="button-default">
+<input type="button" value="Tab to $" onClick="g_form.txaIn.value = g_form.txaIn.value.split('\t').join('$')" class="button-default">
+<input type="button" value="$ to Tab" onClick="g_form.txaIn.value = g_form.txaIn.value.split('$').join('\t')" class="button-default">
+		</td>
+		<td width="49%">
+				<textarea name="txaOut" class="txa-output"></textarea>
+				<input type="button" value="- Put contents" onClick="putRecycledContent();" class="button-default"/>
+		</td>
+	</tr>
+</table>
+</form>
+</body>
+</html>

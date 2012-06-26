@@ -1,0 +1,412 @@
+<html>
+<head>
+<title>Code Generator 2.3</title>
+<meta name="description" content="A file containing one of each of the main HTML input types, and most common non-form-elements.">
+<meta name="keywords" content="css form table select text input stylesheet">
+<script>
+var sTabSelected = "td-String";
+</script>
+<link rel="stylesheet" href="styles/general.css"/>
+<script src="js/Util_Cookie.js"></script>
+<script src="js/CodeGenerator_utils.js"></script>
+<script src="js/CodeGenerator.js"></script>
+<script>
+// ===========================================================================
+</script>
+<script language="javaScript" src="js/dataObject.js"></script>
+<script language="javaScript" src="js/serializedClassDefs.js"></script>
+<script language="javaScript" src="js/StringUtils.js"></script>
+<script language="javaScript" src="js/NumberUtils.js"></script>
+<script language="javaScript" src="js/FormUtils.js"></script>
+</head>
+<body onLoad="runOnLoad();">
+<form>
+<table style="margin-top: 2px;margin-left: 2px;width: 98%;" cellpadding="2" cellspacing="0">
+    <tr>
+        <td class="table-tab-on" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-String">
+            Create string
+        </td>
+        <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-DeString">
+            To text
+        </td>
+        <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Cap">
+            Captialization
+        </td>
+        <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Sets">
+            Sets
+        </td>
+        <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Func">
+            Functionize
+        </td>
+        <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Sort">
+            Sorterize
+        </td>
+        <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Replace">
+            Replace
+        </td>
+        <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Shablonen">
+            Shablonen
+        </td>
+        <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-DataObject">
+            Data Object
+        </td>
+        <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-FormatFile">
+            Format File
+        </td>
+        <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Clippy">
+            Clippy (<span id="span-clippyCount">0</span>)
+        </td>
+        <td class="table-tab-off" style="border-top:none;border-right:none;">
+            &nbsp;
+        </td>
+    </tr>
+</table>
+<table class="table-main" style="margin-left: 2px;width: 98%;">
+    <tr>
+        <td style="width:100%;">
+            <span id="span-String">
+                <table border="0">
+                <tr>
+                <td style="width: 400px;">
+                <input type="radio" name="radType" value="String" onChange="setVarName(this.name)" onClick="setVarName(this.name)" onBlur="setVarName(this.name)" CHECKED>String &nbsp;
+                <input type="radio" name="radType" value="StringBuffer" onChange="setVarName(this.name)" onClick="setVarName(this.name)" onBlur="setVarName(this.name)">String Buffer<br>
+                Escape backslashes <input type="radio" name="radEscape" value="Yes" onChange="setVarName(this.name)" onClick="setVarName(this.name)" onBlur="setVarName(this.name)" CHECKED>Yes&nbsp;
+                <input type="radio" name="radEscape" value="No" onChange="setVarName(this.name)" onClick="setVarName(this.name)" onBlur="setVarName(this.name)">No<br>
+                Var name <input type="text" name="txtVarName" value="sOut">
+                Nr of indents <input type="text" name="txtIndentCount" value="2" style="width: 40">
+                </td>
+                <td style="vertical-align: bottom;">
+                <input type="button" value="Generate Code" onClick="runStringGeneration();" class="button-default">
+                </td>
+                </tr>
+                </table>
+            </span>
+            <span id="span-DeString" style="display: none;">
+                <input type="button" value="De String" onClick="runDeString();" class="button-default">
+            </span>
+            <div id="span-Cap" style="display: none;">
+                <table border="0">
+                <tr>
+                <td style="width: 400px;">
+                    <input type="radio" name="radTypeCase" value="UpperCase" CHECKED>UpperCase
+                    <input type="radio" name="radTypeCase" value="LowerCase">LowerCase<br>
+                    <input type="radio" name="radTypeCase" value="GuessCase">Guess Case<br>
+                    <input type="radio" name="radTypeCase" value="InnerCaps">InnerCaps
+                    <input type="radio" name="radTypeCase" value="Underscore">Underscore<br>
+                </td>
+                <td style="vertical-align: bottom;">
+                    <input type="button" value="Re-capitalize" onClick="runReCapitalize();" class="button-default">
+                    <input type="button" value="Put contents" onClick="putRecycledContent();" class="button-default putContents">
+                </td>
+                </tr>
+                </table>
+            </div>
+            <div id="span-Sets" style="display: none;">
+                <table border="0">
+                <tr>
+                <td style="width: 400px;">
+                    <input type="radio" name="radSetsOp" value="Merge" onclick="doOnClickRadSetsOp(this)" checked="checked">Merge A + B
+                    <input type="radio" name="radSetsOp" value="AMinusB" onclick="doOnClickRadSetsOp(this)">Outer A - B<br/>
+                    <input type="radio" name="radSetsOp" value="Common" onclick="doOnClickRadSetsOp(this)">Common A () B
+                    <input type="radio" name="radSetsOp" value="Cartesian" onclick="doOnClickRadSetsOp(this)">Cartesian A x B
+                    <span id="spanCartesianSeparatorWrapper" style="display:none;"><input type="text" name="txtCartesianSeparator" value=" -AND- "/></span>
+                </td>
+                <td style="vertical-align: bottom;">
+                    <input type="checkbox" name="chxIsSetsCommasSeparators" value="yes" checked="checked"/>Commas are separators
+                    <input type="checkbox" name="chxIsCommaSepOut" value="yes"/>Output Comma Sep
+                    <input type="checkbox" name="chxIsSortSetsOutput" value="yes"/>Sort Output<br/>
+                    <input type="button" value="Run Operation" onClick="runSetsOp();" class="button-default">
+                    <input type="button" value="Swap A &amp; B" onClick="swapSetInputs();" class="button-default putContents">
+                </td>
+                </tr>
+                <tr>
+                    <td>
+                        <textarea name="txaSetA" class="txa-setsInput"></textarea>
+                    </td>
+                    <td>
+                        <textarea name="txaSetB" class="txa-setsInput"></textarea>
+                    </td>
+                </tr>
+                </table>
+            </div>
+            <div id="span-FormatFile" style="display: none;">
+                <table border="0">
+                    <tr>
+                        <td style="width: 400px;">
+                            <input type="radio" name="radTypeFormatFile" value="txt">Text
+                            <input type="radio" name="radTypeFormatFile" value="css" checked="checked">CSS
+                            <div id="formatFileStatusBar" class="area-buttonGroup codeWindow"></div>
+                        </td>
+                        <td style="vertical-align: bottom;">
+                            <input type="button" value="Re-Format" onClick="runReFormat();" class="button-default">
+                            <input type="button" value="Put contents" onClick="putRecycledContent();" class="button-default putContents">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <span id="span-Func" style="display: none;">
+                <table border="0">
+                <tr>
+                <td style="width: 78%">
+                    <textarea name="txaFuncFormat" class="txa-func">${0} ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}</textarea>
+<input type="button" value="Save To Clippy" onClick="appendClippy(g_form.txaFuncFormat.value)" class="button-default">
+                </td>
+                <td style="vertical-align: bottom;" class="txt-small">
+                    <script>
+                    var sOut = "Use ${0} to get \"$\" separated values<br>";
+                    sOut += "Use $COUNTER{} to display an incrmenting value.<br>";
+                    sOut += "Use $COUNTER{n} to start counting from that number, eg $COUNTER{1}.<br>";
+                    sOut += "Use $SECTION{} to create output blocks.<br>";
+                    sOut += "SECTION params: \"norepeat\" outputs a section once.<br>";
+                    sOut += "SECTION params: \"nonewline\" removes returns (new lines).<br>";
+                    sOut += "<br>";
+                    sOut += "To manipulate values, use the following:<br>";
+                    for(var i = 0; i < asMods.length; i++){
+                        sOut += getMarkerMod(asMods[i]) + "&lt;value&gt;";
+                        if(i == (asMods.length - 1)){
+                            sOut += "$&lt;find&gt;$&lt;replace&gt;";
+                        }
+                        sOut += "}<br>";
+                    }
+                    sOut += "<br>";
+                    document.write(sOut);
+                    </script>
+                    <select name="selFuncTemplates" onChange="setTemplateMod(this)">
+                        <option value="">-- choose template --</option>
+                        <option value="simple">Simple</option>
+                        <option value="sqlinsert">SQL Insert</option>
+                        <option value="htmltable">HTML Table</option>
+                        <option value="javaclass">Java Class</option>
+                        <option value="javastrutsaction">Java Struts Action</option>
+                        <option value="declaremembervars">Declare member vars</option>
+                        <option value="xmlvalues">XML (values)</option>
+                        <option value="xmlnodes">XML (nodes)</option>
+                        <option value="htmlselectfield">HTML Select Field</option>
+                        <option value="hibernateproperty">Hibernate property</option>
+                        <option value="batrenamefiles">BAT Rename Files</option>
+                        <option value="imagedisplaypage">Image Display Page</option>
+                    </select>&nbsp;&nbsp;&nbsp;<input type="checkbox" value="acknowlegeTabs" checked="checked"/>tab=$<br>
+                    <input type="button" value="Functionize" onClick="runFunc();" class="button-default">
+                    <input type="button" value="tab to $" onClick="setTextAreaValue('txaOut', getTextAreaValue('txaIn').split('^t').join('\t').split('\t').join('$').split(' $').join('$').split('$ ').join('$'));" class="button-default">
+                    <input type="button" value="Put contents" onClick="putRecycledContent();" class="button-default putContents">
+                </td>
+                </tr>
+                </table>
+            </span>
+            <span id="span-Sort" style="display: none;">
+                <table border="0">
+                <tr>
+                <td style="width: 150px;">
+                    <input type="radio" name="radSortOrder" value="Descending" checked>Descending<br>
+                    <input type="radio" name="radSortOrder" value="Ascending">Ascending<br>
+                    <hr>
+                    <input type="checkbox" name="chxIsRemoveDuplicates" value="yes"/>Remove Duplicates
+                    <input type="checkbox" name="chxIsRemoveBlanks" value="yes" checked="checked"/>Remove Blanks
+                </td>
+                <td style="width: 200px;">
+                    <select name="selSortSelection">
+                        <option value="Natural" selected>Natural</option>
+                        <option value="AfterCharNum">After Character number</option>
+                        <option value="AfterFirstIndex">After first index of</option>
+                        <option value="ByMarker">By marker</option>
+                    </select>
+                    <input type="text" name="txtSortMarker" value="3">
+                </td>
+                <td style="vertical-align: bottom;">
+                    <input type="button" value="  Sort  " onClick="runSort();" class="button-default">
+<input type="button" value="Put contents" onClick="putRecycledContent();" class="button-default putContents">				</td>
+                </tr>
+                </table>
+            </span>
+            <span id="span-Replace" style="display: none;">
+                <table border="0" style="width: 100%;">
+                <tr>
+                <td style="width: 180px;">
+                    <input type="radio" name="radWithTrim" value="0" checked>None
+                    <input type="radio" name="radWithTrim" value="1">One<br>
+                    <input type="radio" name="radWithTrim" value="4">Four
+                    <input type="radio" name="radWithTrim" value="1000">All<br>
+                    <input type="button" value="Guess Case" onClick="setSearchReplaceCaseGuesses()" class="button-default" style="margin-left: 0px;width: 120px;margin-top: 2px;">
+                    <input type="button" value="Multiple returns" onClick="g_form.txaReplacePairs.value = '^n^n^n^n^n^n^n^n$^n\n^n^n^n^n$^n\n^n^n^n$^n\n^n^n$^n\n^n^n$^n'" class="button-default" style="margin-left: 0px;width: 120px;margin-top: 2px;">
+                    <input type="button" value="Html L.Case" onClick="runSetReplaceValues('HTML');" class="button-default" style="margin-left: 0px;width: 120px;margin-top: 2px;">
+                    <input type="button" value="Slash - Backslash" onClick="runSetReplaceValues('slash');" class="button-default" style="margin-left: 0px;width: 120px;margin-top: 2px;">
+                    <hr>
+                    <input type="button" value="Append" onClick="runAppend();" class="button-default"
+                    style="margin-left: 0px;width: 60px;"><select name="selAppendString" style="background-color:#E6E9DF;border:1px solid black;">
+                        <option value="^t" selected>Tab</option>
+                        <option value="^n">Return</option>
+                        <option value=" ">Space</option>
+                        <option value="Other">Other...</option>
+                    </select>
+                    <hr>
+                    <input type="button" value="Save To Clippy" onClick="appendClippy(g_form.txaReplacePairs.value)" class="button-default">
+                </td>
+                <td style="">
+                    <textarea style="width: 100%;height: 200px;" name="txaReplacePairs">  $
+^t^t$^t
+^n^n$^n</textarea>
+<div id="replacePairsStatusBar" class="area-buttonGroup codeWindow">Enter Values in field above, then press Replace</div>
+                </td>
+                <td style="vertical-align: bottom;width: 200px;">
+                    <div class="txt-small">
+Enter find$replace strings on each line.<br>
+Each pair is completed before the next starts, so a chain of find-replaces can be done.<br>
+<br>
+To replace special characters, use:<br>
+                    ^n for new-line<br>
+                    ^t for tab<br>
+                    ^$ for $<br>&nbsp;</div>
+                    <input type="button" value="  Replace  " onClick="runReplace();" class="button-default">
+                    <input type="button" value="Put contents" onClick="putRecycledContent();" class="button-default putContents">
+                </td>
+                </tr>
+                </table>
+            </span>
+            <span id="span-Shablonen" style="display: none;">
+                <table border="0" style="width: 100%;">
+                <tr>
+                <td style="width: 90%">
+                    <textarea name="txaShablonen" class="txa-func" style="height: 500px;"></textarea>
+                </td>
+                <td style="vertical-align: bottom;" class="txt-small">
+                    Templates<br>
+                    <select name="selShablonen" onChange="setShablonen(this)">
+                    <option value="">--</option>
+                    <option value="">HTML</option>
+                    <option value="">CSS</option>
+                    <option value="">XML</option>
+                    </select><br>
+                </td>
+                </tr>
+                </table>
+            </span>
+            <span id="span-DataObject" style="display: none;">
+                <table border="0" style="width: 100%;">
+                    <tr>
+                        <td>
+                            Templates:
+                        </td>
+                        <td style="width: 90%">
+                            <input type="checkbox" name="txtDobj_createJavaStrutsForm" onchange="doOnChangeTxtDobj()">Java Struts Form</checkbox>
+                            <input type="checkbox" name="txtDobj_createJavaVO" onchange="doOnChangeTxtDobj()">Java Value Object</checkbox>
+                            <input type="checkbox" name="txtDobj_createSqlSelect" onchange="doOnChangeTxtDobj()">SQL Select</checkbox>
+                            <input type="checkbox" name="txtDobj_createSqlCreateTable" onchange="doOnChangeTxtDobj()">SQL CreateTable</checkbox>
+                            <input type="checkbox" name="txtDobj_createSqlInsert" onchange="doOnChangeTxtDobj()">SQL Insert</checkbox>
+                            <input type="checkbox" name="txtDobj_createHtmlForm" onchange="doOnChangeTxtDobj()">HTML Form</checkbox>
+                            <input type="checkbox" name="txtDobj_createChampionBean" onchange="doOnChangeTxtDobj()">Champion Bean</checkbox>
+                            <input type="checkbox" name="txtDobj_createHibernateMapping" onchange="doOnChangeTxtDobj()">Hibernate Mapping</checkbox>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Objects:
+                        </td>
+                        <td style="width: 90%">
+                            <input type="checkbox" name="txtDobj_setting_intAsInteger" onchange="doOnChangeTxtDobjSetting()">Present int as Integer</checkbox>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Class Name
+                        </td>
+                        <td style="width: 90%">
+                            <input type="text" name="txtDobj_className" class="" onblur="formatAsClassName(this)"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Table Name
+                        </td>
+                        <td style="width: 90%">
+                            <input type="text" name="txtDobj_tableName" class="" onblur="formatAsTableName(this)"/>_t
+                            <select name="txtDobj_classNameSelect" onchange="doOnChangeDobjClassNameSelect(this)">
+                                <option value="">-</option>
+                            </select>
+                            <input type="button" class="button-default" value="Create Code" onclick="runGenerateDataObject()">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Convert
+                        </td>
+                        <td style="width: 90%">
+                            <div class="areaSub">
+                                <div class="txt-small">Use format: <span class="txtVeryBold">column_name</span><span class="txtVeryFaint">$</span><span class="txtVeryBold">type</span><span class="txtVeryFaint">$</span><span class="txtVeryBold">max-length</span><span class="txtVeryFaint">[$</span><span class="txtVeryBold">min-length</span><span class="txtVeryFaint">]</span>
+                                &nbsp; &nbsp;EG:
+                                <span class="txtVeryBold">user_id</span><span class="txtVeryFaint">$</span><span class="txtVeryBold">int</span><span class="txtVeryFaint">$</span><span class="txtVeryBold">10</span>
+                                &nbsp; &nbsp; EG:
+                                <span class="txtVeryBold">user_name</span><span class="txtVeryFaint">$</span><span class="txtVeryBold">String</span><span class="txtVeryFaint">$</span><span class="txtVeryBold">10</span><span class="txtVeryFaint">$</span><span class="txtVeryBold">1</span><br/>
+                                <input type="button" class="button-default" value="Convert SQL" onclick="runConvertFromSqlDescriptionToFields()"/>
+                                <input type="button" class="button-default" value="Convert From $ Separated Data" onclick="runConvertFromDollarSeparatedToFields()" style="width:170px"/>
+                                <div class="txt-small">Cut and paste from the database values, then use this to format the data.</div>
+                                </div>
+                            </div>
+                            <div class="areaSub" style="padding:0px;">
+                                <div id="dataGridHead" style="background-color:#C8CDBC;left:0px;right:0px;cursor:pointer;" onclick="showHideDataGrid()">Class Definition</div>
+                                <div id="dataGrid"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </span>
+            <span id="span-Clippy" style="display: none;">
+                <table border="0" width="99%">
+                <tr>
+                <td>
+                    <textarea class="txa-output" name="txaClippy0" style="height:200px;"></textarea>
+                </td>
+                </tr>
+                <tr>
+                <td style="vertical-align: bottom;">
+                    <span class="area-buttonGroup">
+                    <input type="button" value=" &lt; Prev  " onClick="showClippy(-1);" class="button-default">
+                    <span class="txt-small" id="span-clippyInfo">There are no clippies</span>
+                    <input type="button" value="  Next > " onClick="showClippy(1);" class="button-default">
+                    </span> &nbsp; &nbsp;
+                    <span class="area-buttonGroup">
+                    <!-- input type="button" value="Debug" onClick="doClippyDebug();" -->
+                    <input type="button" value="  Update  " onClick="asClippy[iClippyCurr] = g_form.txaClippy0.value;" class="button-default">&nbsp;
+                    <input type="button" value=" Save New " onClick="appendClippy(g_form.txaClippy0.value);" class="button-default">&nbsp;
+                    <input type="button" value=" Remove " onClick="removeCurrentClippy();" class="button-default">
+                    </span>
+                </td>
+                </tr>
+                </table>
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td width="500" class="table-main">
+        </td>
+        <td width="500" class="table-main">
+        </td>
+    </tr>
+</table>
+<table class="table-main" style="margin-left: 2px;width: 98%;" id="table-inAndOutFields">
+    <tr>
+        <td style="width:49%;height:500px;" id="td-inField"><!-- // Mikijuice -->
+                <textarea name="txaIn" class="txa-output">id$int$32$1
+firstname$String$50$1
+surname$String$80$1
+email$Email$80$1
+date_of_birth$Date
+</textarea><input type="button" value="Save To Clippy" onClick="appendClippy(g_form.txaIn.value)" class="button-default">
+<input type="button" value="Tab to $" onClick="g_form.txaIn.value = g_form.txaIn.value.split('\t').join('$')" class="button-default">
+<input type="button" value="$ to Tab" onClick="g_form.txaIn.value = g_form.txaIn.value.split('$').join('\t')" class="button-default">
+        </td>
+        <td style="width:1%;" id="td-inbetweenField">
+            <br/>
+            <span onclick="doClickInbetween('L')" class="clicky"><img src="styles/icnResizeWindowL.gif" /></span><br/><br/>
+            <span onclick="doClickInbetween('R')" class="clicky"><img src="styles/icnResizeWindowR.gif" /></span><br/><br/>
+            <span onclick="doClickInbetween('U')" class="clicky"><img src="styles/icnResizeWindowU.gif" /></span><br/><br/>
+            <span onclick="doClickInbetween('D')" class="clicky"><img src="styles/icnResizeWindowD.gif" /></span><br/><br/>
+        </td>
+        <td style="width:49%;height:500px;" id="td-outField">
+                <textarea name="txaOut" class="txa-output"></textarea>
+                <input type="button" value="Put contents" onClick="putRecycledContent();" class="button-default putContents">
+        </td>
+    </tr>
+</table>
+</form>
+</body>
+</html>

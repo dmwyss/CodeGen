@@ -1,0 +1,47 @@
+//
+
+var aserializedClassDefs = new Array();
+
+function addClassDef(sDef){
+	aserializedClassDefs[aserializedClassDefs.length] = new SerializedClassDef(sDef);
+}
+
+function SerializedClassDef(sDef){
+	var iPos = sDef.indexOf("#");
+	this.project = sDef.substring(0, iPos);
+	sDef = sDef.substring(iPos + 1);
+	this.name = sDef.substring(0, sDef.indexOf("#"));
+	this.fields = sDef.substring(sDef.indexOf("#") + 1);
+}
+
+addClassDef("jobTracker#lead#id$int$1$16$$key$Id of the lead#status_id$int$1$16$$fkey$Status of the Lead#title$String$300$1$$$Short title of the position#description$String$0$2000$$notnull$Job description.#duration_weeks$int$8$1$6$$How long, use zero for permanent#consultant_id$int$1$16$$fkey$Who was spoken to#created_dtime$Date$1$16$current_timestamp$notnull$Created date time#covering_letter_id$int$32$1$0$fkey$ID of a covering letter sent with application.#rating$int$32$0$0$$How good is the role.#resume_sent_name$String$100$0$$$Name of the resume sent#salary_per_annum$Integer$50$0$0$$Estimated income per year.#rate_per_day$Integer$32$0$$$Rate per day#employer$String$32$0$$$Name of the company for whom I would work.#employer_contact$String$32$0$$$Person/People at employer. Separate each with comma.#employer_notes$String$32$0$$$General notes about employer.");
+//addClassDef("jobTracker#lead#id$int$1$16$$key$Id of the lead#status_id$int$1$16$$fkey$Status of the Lead#title$String$300$1$$$Short title of the position#description$String$0$2000$$notnull$Job description.#duration_weeks$int$8$1$6$$How long, use zero for permanent#consultant_id$int$1$16$$fkey$Who was spoken to#created_dtime$Date$1$16$current_timestamp$notnull$Created date time#covering_letter_id$int$32$1$0$fkey$ID of a covering letter sent with application.#rating$int$32$0$0$$How good is the role.#resume_sent_name$String$100$0$$$Name of the resume sent#salary_per_annum$Integer$50$0$0$$Estimated income per year.#rate_per_day$Integer$32$0$$$Rate per day");
+addClassDef("jobTracker#lead_status#id$int$1$16$$key$Id of the LeadStatus#short_code$String$32$0$$$Unique Abreviation of status.#display_order$int$5$1$100$$Order to appear in lists etc#name$String$1$50$$$Short name#description$String$0$300$$$What this status denotes#display_color$String$32$0$000000$$FG color of status#display_background_color$String$32$0$C0C0C0$$BG color of status");
+
+addClassDef("jobTracker#lead_event_status#id$int$1$16$$key$Id of the LeadEventStatus#name$String$1$16$$$Short name of the Status#description$String$0$300$$$What this status denotes");
+addClassDef("jobTracker#consultant#id$int$1$16$$key$Id of the Consultant#agency_id$int$1$16$$fkey$Which Agency they belong to#name_first$String$1$16$$$First name of the consultant#name_last$String$1$16$$$Last name of the consultant#phone$String$1$16$$$Phone number of the consultant#email$Email$0$16$$$Email of the consultant#notes$String$600$0$$$Personal notes regarding consultant");
+addClassDef("jobTracker#agency#id$int$1$16$$key$Id of the Agency#name$String$1$16$$$Name#phone$String$0$$$$Phone number of the Agency#address$String$200$0$$$Street Address of agency");
+addClassDef("jobTracker#event#id$Integer$1$16$$key$Id of the Event#lead_id$Integer$32$1$$fkey$To which lead does this belong#execution_date$Date$1$16$current_timestamp$$When the Event took place#type$String$100$0$$$Id of the Status set to this Event#description$String$500$0$$$Who was spoken to etc");
+addClassDef("jobTracker#covering_letter#id$int$1$16$$key$Id of the Letter#rating$int$1$1$0$$How good is it#path$String$1$16$$$Fwd slash sep path to file#body$String$0$0$$$Text for the letter");
+
+/*
+addClassDef("redFolder#New Table#id$int$32$1$");
+addClassDef("redFolder#user#id$int$32$1$$key$Id for a user.#user_type_id$int$32$1$1$fkey$User type id for a user. 1 user, 2 hr, 3 admin.#firstname$String$50$1$$notnull$Firstname for a user.#surname$String$80$1$$notnull$Surname for a user.#email$Email$80$1$$notnull$Email for a user.#password$Password$20$5$$notnull$Password for a user.#date_of_birth$Date$2000$0$$$Date of birth for a user.#phone_office$String$40$0$$$Phone office for a user.#phone_private$String$40$0$$$Home phone number.#send_updates$boolean$1$1$Y$$Whether or not a user wants to receive email updates.");
+//addClassDef("redFolder#leave#id$int$32$1$$key$Id for a leave.#user_id$int$32$1$$fkey$User id for a leave.#leave_type_id$int$32$0$$fkey$Leave type id for a leave.#from_dtime$Date$32$0$sysdate$$From dtime for a leave.#to_dtime$Date$32$0$sysdate$$To dtime for a leave.#span$int$32$0$1$$Span for a leave.#parent_leave_id$int$32$1$$fkey-nullable$Parent leave id for a leave.#creator_user_id$int$32$1$$fkey$Creator user id for the Leave.");
+addClassDef("redFolder#leave#id$int$32$1$$key$Id for a leave.#user_id$int$32$1$$fkey$User id for a leave.#leave_type_id$int$32$0$0$fkey$Leave type id for a leave.#from_date_int$int$32$0$0$$From dtime for a leave.#to_date_int$int$32$0$0$$To dtime for a leave.#span$int$32$0$1$$Span for a leave.#parent_leave_id$int$32$0$0$fkey-nullable$Parent leave id for a leave.#creator_user_id$int$32$1$$fkey$Creator user id for the Leave.");
+addClassDef("redFolder#admin_content#id$int$32$1$Id for the AdminContent.$key$Id for a admin content.#context$String$40$0$Context for the AdminContent.$notnull$Context for a admin content.#key$String$40$0$Key for the AdminContent.$notnull$Key for a admin content.#head$String$200$0$$$Head for a admin content.#body$String$2000$0$$$Body for the AdminContent.");
+//addClassDef("redFolder#team#id$int$32$1$Id for the Team.$key$Id for a team.#parent_team_id$int$32$0$Parent team id for the Team. One row can be null if top level.$fkey-nullable$Parent team id for a team.#name$String$50$0$$$Name for a team.#manager_user_id$int$32$1$Manager user id for the Team.$fkey-nullable$Manager user id for a team.#proxy_user_id$int$32$0$$fkey-nullable$Assistant user id for the Team.");
+addClassDef("redFolder#team#id$int$32$1$$key$Id for a team.#parent_team_id$int$32$0$$fkey-nullable$Parent team id for a team.#name$String$50$0$New Team$$Name for a team.#manager_user_id$int$32$1$$fkey-nullable$Manager user id for a team.#proxy_user_id$int$32$0$$fkey-nullable$Assistant user id for the Team.");
+//addClassDef("redFolder#leave_status#id$int$32$1$Id for the LeaveStatus.$key$Id for a leave status.#leave_id$int$32$1$Leave id for the LeaveStatus.$fkey$Leave id for a leave status.#leave_status_type_id$int$32$1$Leave status type id for the LeaveStatus.$fkey$Leave status type id for a leave status.#comment$String$500$0$$$Comment for a leave status.#creator_user_id$int$32$1$$$Creator user id for a leave status.#insert_dtime$Date$2000$0$$$Insert dtime for the LeaveStatus.");
+addClassDef("redFolder#leave_status#id$int$32$1$$key$Id for a leave status.#leave_id$int$32$1$$fkey$Leave id for a leave status.#leave_status_type_id$int$32$1$$fkey$Leave status type id for a leave status.#comment$String$500$0$$$Comment for a leave status.#creator_user_id$int$32$1$$fkey$Creator user id for a leave status.#insert_dtime$Date$2000$0$sysdate$$Insert dtime for the LeaveStatus.");
+addClassDef("redFolder#leave_type#id$int$32$1$$key$Id for a leave type.#name$String$50$0$$notnull$Name for a leave type.#description$String$500$0$$$Description for a leave type.#allowed_per_annum$int$32$0$0$$Allowed per annum for the LeaveType.");
+addClassDef("redFolder#user_type#id$int$32$1$$key$Id for a user type.#name$String$50$0$$$Name for a user type.#description$String$500$0$$$Description for the UserType.");
+addClassDef("redFolder#flow_permutations#id$int$32$1$$key$Id for a flow permutations.#user_type_id$int$32$1$$$User type id for a flow permutations.#leave_type_id$int$32$1$$$Leave type id for a flow permutations.#leave_status_id$int$32$1$$$Leave status id for a flow permutations.#leave_status_permutation_id$int$32$1$$$What status it can be changed to.");
+addClassDef("redFolder#leave_status_type#id$int$32$1$$key$Id for a leave status type.#name$String$50$0$$$Name for a leave status type.#description$String$500$0$$$Description for the LeaveStatusType.");
+addClassDef("redFolder#team_members#id$int$32$1$$key$Local key.#team_id$int$32$1$$fkey$Link to the team#user_id$int$32$1$$fkey$Link to the user#team_member_type_id$int$32$1$$fkey$Is the user a manager, proxy or normal team member.#user_firstname$String$50$0$$$First name of the user#user_surname$String$50$0$$$Last name of the user.#user_email$Email$80$0$$$Email to the user.#team_name$String$50$0$$$Name of the team to which it belongs.");
+addClassDef("redFolder#leave_projection_v#leave_id$int$32$1$$$ID of the leave#leave_from_date_int$int$32$1$$$Leave start date#leave_to_date_int$int$32$1$$$Leave end date#leave_span$int$10$1$1$$How many days away#user_id$int$32$1$$$ID of the user#user_firstname$String$50$1$$$Given name#user_surname$String$50$1$$$Family name#user_email$String$200$1$$$Email for the user#team_id$int$32$1$$$ID of the #team_name$String$50$1$$$Name of the team#manager_id$int$32$1$$$ID of the #manager_firstname$String$50$1$$$Given name of the approver#manager_surname$String$50$1$$$Last name of the approver#manager_email$String$200$1$$$Email of the approver.#status_type_id$int$32$1$$$ID of the #status_insert_dtime$Date$$1$$$When the status was last changed.");
+addClassDef("redFolder#event#id$int$32$1$$$Id for a Event.#date_int$int$32$1$0$$Date int to represent the day.#name$String$50$0$Holiday$$Label explanation.#blocked$int$10$1$1$$How many days this counts to block.");
+*/
+
+
+	
