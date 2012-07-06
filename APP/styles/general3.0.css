@@ -27,6 +27,8 @@ textarea {
     background-repeat: repeat-y;
     padding-left:15px;
     border:1px solid #B1B2B3;
+    font-family: "Courier New", Courier, Consolas;
+    font-size: 8pt;
 }
 select, .txtDefault {
     font-family: Consolas, "Courier New";
@@ -34,7 +36,6 @@ select, .txtDefault {
     border: 0px;
     border-right: 1px solid #CCC;
     border-bottom: 1px solid #CCC;
-
 }
 .txt-small {
     font-size: 7pt;
@@ -42,7 +43,7 @@ select, .txtDefault {
 .table-tab-on {
 }
 body, .table-tab-off {
-    background-color: #EEEEEC;
+    background-color: #ddE4EE;
 }
 .table-tab-off {
     border-bottom: 1px solid #B1B2B3;
@@ -59,11 +60,10 @@ table.table-main, td.table-main {
     width: 100%;
     /*height: 500px;*/
     height: 100%;
-    font-size: 8pt;
 }
 .txaDefault {
-    font-family: Consolas, "Courier New";
-    font-size:9pt;
+    XXfont-family: "Courier New", Consolas;
+    XXfont-size: 8pt;
 }
 .txa-func {
     width: 100%;
@@ -73,7 +73,7 @@ table.table-main, td.table-main {
     height: 300px;
     width:399px;
 }
-.button-default, .button-off {
+.button-default, .button-default-on, .button-off {
     font-size: 7pt;
     font-family: Verdana;
     color: black;
@@ -81,6 +81,22 @@ table.table-main, td.table-main {
     border: 1px solid #B1B2B3;
     border-bottom: 1px solid #999;
     background: url("bgButton.gif");
+    border-radius:4px;
+}
+.button-default-on {
+    color: #000;
+    background: #3399FF;
+	background: #87e0fd; /* Old browsers */
+	background: -moz-linear-gradient(top,  #87e0fd 0%, #53cbf1 71%, #05abe0 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#87e0fd), color-stop(71%,#53cbf1), color-stop(100%,#05abe0)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #87e0fd 0%,#53cbf1 71%,#05abe0 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #87e0fd 0%,#53cbf1 71%,#05abe0 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #87e0fd 0%,#53cbf1 71%,#05abe0 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #87e0fd 0%,#53cbf1 71%,#05abe0 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#87e0fd', endColorstr='#05abe0',GradientType=0 ); /* IE6-9 */
+    border: 1px solid #888;
+    font-weight: bold;
+    width:90px;
 }
 .button-off {
     color: #b4b8a9;

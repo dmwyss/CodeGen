@@ -35,6 +35,8 @@ function startRefreshData(sMode){
 }
 
 function EntityManager(){
+	this.choiceCookieName = "LastChosenEntity";
+	this.currentChoice = "";
 	this.entityList = new Array();
 	this.addEntity = function(entIn){
 		this.entityList[this.entityList.length] = entIn;
@@ -60,7 +62,15 @@ function EntityManager(){
 			sOut += this.entityList[iEnt].toString();
 		}		
 		return sOut;
-	}
+	};
+	this.storeChoice = function(){
+		this.currentChoice = getSelectValue("selDobjEntity");
+		setCookie(this.choiceCookieName, this.currentChoice);
+	};
+	this.resumeChoice = function(){
+		this.currentChoice = getCookie(this.choiceCookieName);
+		setSelectValue("selDobjEntity", this.currentChoice);
+	};
 }
 function Entity(){
 	this.project = "";
@@ -195,7 +205,7 @@ function writeDobjCode(){
 			sTemp = processIsFirstLastMarkers(sTemp, "FIRST", false);
 			sTemp = processIsFirstLastMarkers(sTemp, "NOTFIRST", false);
 			sTemp = processIsFirstLastMarkers(sTemp, "LAST", false);					
-			sTemp = processIsFirstLastMarkers(sTemp, "NOTLAST", false);					
+			sTemp = processIsFirstLastMarkers(sTemp, "NOTLAST", false);
 			
 			/*
 			for(; iBit < asValuesFROMSIMPLESTRING.length; iBit++){
@@ -210,6 +220,7 @@ function writeDobjCode(){
 			for ( var iFindReplacePair = 0; iFindReplacePair < entityToConvert.staticList.length; iFindReplacePair++) {
 				sTemp = replaceSubstring(sTemp, "${" + entityToConvert.staticList[iFindReplacePair][0] + "}", entityToConvert.staticList[iFindReplacePair][1]);
 			}
+			sTemp = processIfStatements(sTemp);
 			sOut += evaluateMod(sTemp) + sNL;
 			
 			if(asSettings[iFormat].indexOf("norepeat") != -1){
@@ -229,6 +240,39 @@ function writeDobjCode(){
 	setTextAreaValue("txaOut", sOutAll);
 }
 	
+function processIfStatements(sTemp){
+	var sMarker = "$IF{";
+	var iPos = sTemp.indexOf(sMarker);
+	while(iPos != -1){
+	 	var sBefore = sTemp.substring(0, iPos);
+	 	var sRemaining = sTemp.substring(iPos + sMarker.length);
+	 	
+	 	var iPosFirstInnerSep = sRemaining.indexOf("$");
+	 	var sActual = sRemaining.substring(0, iPosFirstInnerSep);
+	 	var sRemaining = sRemaining.substring(iPosFirstInnerSep + 1);
+	
+	 	var iPosSecondInnerSep = sRemaining.indexOf("$");
+	 	var sShould = sRemaining.substring(0, iPosSecondInnerSep);
+	 	var sRemaining = sRemaining.substring(iPosSecondInnerSep + 1);
+	 	
+	 	var iPosThirdInnerSep = sRemaining.indexOf("$");
+	 	//var iPosToSeeIfMissing = sRemaining.indexOf("}");
+	 	//if(iPosThirdInnerSep > iPosToSeeIfMissing){
+	 	//	iPosThird
+	 	//}
+	 	var sShowIfTrue = sRemaining.substring(0, iPosThirdInnerSep);
+	 	var sRemaining = sRemaining.substring(iPosThirdInnerSep + 1);
+	 	
+	 	var iPosClose = sRemaining.indexOf("}");
+	 	var sShowIfFalse = sRemaining.substring(0, iPosClose);
+	 	var sRemaining = sRemaining.substring(iPosClose + 1);
+	 	
+	 	var sTemp = sBefore + ((sActual == sShould) ? sShowIfTrue : sShowIfFalse) + sRemaining;
+	 	iPos = sTemp.indexOf("$IF{");
+	}
+ 	return sTemp;
+}
+
 function processIsFirstLastMarkers(sTemp, sFirstOrLast, isShow){
 	if(sTemp.indexOf("$IF" + sFirstOrLast + "{") == -1){
 		return sTemp;	
@@ -249,6 +293,8 @@ function processIsFirstLastMarkers(sTemp, sFirstOrLast, isShow){
 }
 		
 function TemplateManager(){
+	this.currentChoice = "";
+	this.choiceCookieName = "LastChosenTemplate";
 	this.templateList = new Array();
 	this.addTemplate = function(tplateNew){
 		this.templateList[this.templateList.length] = tplateNew;
@@ -267,6 +313,14 @@ function TemplateManager(){
 			aasOut[aasOut.length] = new Array(this.templateList[iTmplt].title, this.templateList[iTmplt].getId());
 		}
 		return aasOut;
+	};
+	this.storeChoice = function(){
+		this.currentChoice = getSelectValue("selDobjTemplate");
+		setCookie(this.choiceCookieName, this.currentChoice);
+	};
+	this.resumeChoice = function(){
+		this.currentChoice = getCookie(this.choiceCookieName);
+		setSelectValue("selDobjTemplate", this.currentChoice);
 	};
 }
 function Template(){
@@ -317,6 +371,7 @@ function processXmlDoc(xmlDoc){
 		}
 		//a lert(entityManager.toString());
 		writeEntitySelector();
+		entityManager.resumeChoice();
 		return;
 	}
 	nodliRoot = xmlDoc.getElementsByTagName("templates");
@@ -335,19 +390,29 @@ function processXmlDoc(xmlDoc){
 			templateManager.addTemplate(templateTemp);
 		}
 		writeTemplateSelector();
+		templateManager.resumeChoice();
 		return;
 	}
 }
 
 function runGenerateDataObject(){
-	writeDobjCode();
+	var isGotFancyStuffToWork = true;
+	if(isGotFancyStuffToWork){
+		refreshDobjEntities();
+		setTimeout("refreshDobjTemplates()", 700);
+		setTimeout("writeDobjCode()", 1000);
+	} else {
+		writeDobjCode();
+	}
 }
 
 var entityManager = new EntityManager;
 var templateManager = new TemplateManager;
 function refreshDobjEntities(){
+	entityManager.storeChoice();
 	startRefreshData("entity");
 }
 function refreshDobjTemplates(){
+	templateManager.storeChoice();
 	startRefreshData("template");
 }

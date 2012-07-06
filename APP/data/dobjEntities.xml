@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entities>
+	<entity project="abl" entityName="BorrowingBaseRecalculationReason">
+		<static objectDescription="Context surrounding a Borrowing Base recalculation."/>
+		<static childDataType="NONE"/>
+		<static childDataObject="NONE"/>
+		<static package="com.primerevenue.mercury.model.borrowingbaserecalculation"/>
+		<static tableName="BorrowingBaseRecalcReason"/>
+		<members>
+			<member name="id" dataType="Long" min="" max="32" default="0L" relation="idLocal" description="Object local key."/>
+			<member name="ledgerId" dataType="Long" min="" max="19" default="0L" relation="" description="Key to the ledger to which this belongs."/>
+			<member name="eventTime" dataType="java.util.Date" min="" max="" default="new java.util.Date()" relation="" description="When did the event occur."/>
+			<member name="typeId" dataType="Long" min="" max="32" default="0L" relation="" description="The sort of event this was."/>
+			<member name="eventReference" dataType="String" min="" max="800" default="&quot;&quot;" relation="" description="Brief description if BBRecalculationReasonType is too general."/>
+			<member name="description" dataType="String" min="" max="300" default="&quot;&quot;" relation="" description="Brief description if BBRecalculationReasonType is too general."/>
+		</members>
+	</entity>
+	<entity project="abl" entityName="BorrowingBaseRecalculationReasonType">
+		<static objectDescription="Grouping for Borrowing Base recalculation reason."/>
+		<static childDataType="NONE"/>
+		<static childDataObject="NONE"/>
+		<static package="com.primerevenue.mercury.model.borrowingbaserecalculation"/>
+		<static tableName="BorrowingBaseRecalcReason"/>
+		<members>
+			<member name="id" dataType="Long" min="" max="32" default="0L" relation="idLocal" description="Object local key."/>
+			<member name="code" dataType="String" min="" max="120" default="&quot;&quot;" relation="" description=""/>
+			<member name="name" dataType="String" min="" max="100" default="&quot;&quot;" relation="" description=""/>
+			<member name="description" dataType="String" min="" max="500" default="&quot;&quot;" relation="" description=""/>
+		</members>
+	</entity>
+	<entity project="abl" entityName="BorrowingBaseRecalculationReasonReport">
+		<static objectDescription="Report projection for Borrowing Base recalculation reason."/>
+		<static childDataType="NONE"/>
+		<static childDataObject="NONE"/>
+		<static package="com.primerevenue.mercury.model.report"/>
+		<static tableName="vw_borrowingBaseRecalcReason"/>
+		<members>
+			<member name="id" dataType="Long" min="" max="32" default="0L" relation="idLocal" description="Object local key."/>
+			<member name="companyId" dataType="Long" min="" max="32" default="0L" relation="" description="Company ID"/>
+			<member name="companyName" dataType="String" min="" max="200" default="&quot;&quot;" relation="" description="Company Name"/>
+			<member name="ledgerId" dataType="Long" min="" max="32" default="0L" relation="" description="Ledger ID"/>
+			<member name="ledgerName" dataType="String" min="" max="200" default="&quot;&quot;" relation="" description="Ledger Name"/>
+			<member name="ledgerSummaryHistoryId" dataType="Long" min="" max="32" default="0L" relation="" description="Ledger Summary History ID"/>
+			<member name="eventDateTime" dataType="java.util.Date" min="" max="" default="new java.util.Date()" relation="" description="Event DateTime"/>
+			<member name="reasonTypeId" dataType="Long" min="" max="32" default="0L" relation="" description="ReasonTypeId"/>
+			<member name="borrowingBaseRecalcReasonId" dataType="Long" min="" max="32" default="0L" relation="" description="Borrowing Base Recalc Reason ID"/>
+			<member name="finalBorrowingBase" dataType="Long" min="" max="32" default="0L" relation="" description="Final Borrowing Base"/>
+			<member name="borrowingBaseMovement" dataType="Long" min="" max="32" default="0L" relation="" description="Borrowing Base Movement"/>
+			<member name="description" dataType="String" min="" max="300" default="&quot;&quot;" relation="" description="Description"/>
+			<member name="eventReference" dataType="String" min="" max="800" default="&quot;&quot;" relation="" description="Event Reference"/>
+		</members>
+	</entity>
+</entities>

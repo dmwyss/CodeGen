@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>CodeGen3.0</title>
+<title>CodeGen3.2.2</title>
 <meta name="description" content="A file containing one of each of the main HTML input types, and most common non-form-elements.">
 <meta name="keywords" content="css form table select text input stylesheet">
 <script>
@@ -26,13 +26,13 @@ var sTabSelected = "td-String";
 <table style="margin-top: 2px;margin-left: 2px;width: 98%;" cellpadding="2" cellspacing="0">
     <tr>
         <td class="table-tab-on" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-String">
-            Create string
+            ToString
         </td>
         <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-DeString">
-            To text
+            ToText
         </td>
         <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Cap">
-            Captialization
+            Captialize
         </td>
         <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Sets">
             Sets
@@ -50,10 +50,13 @@ var sTabSelected = "td-String";
             Shablonen
         </td>
         <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-DataObject">
-            Data Object
+            DataObject
         </td>
         <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-FormatFile">
-            Format File
+            FormatFile
+        </td>
+        <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-HTMLLive">
+            HTMLLive
         </td>
         <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Clippy">
             Clippy (<span id="span-clippyCount">0</span>)
@@ -78,13 +81,13 @@ var sTabSelected = "td-String";
                 Nr of indents <input type="text" name="txtIndentCount" value="2" class="txtDefault" style="width: 40">
                 </td>
                 <td style="vertical-align: bottom;">
-                <input type="button" value="Generate Code" onClick="runStringGeneration();" class="button-default">
+                <input type="button" value="Generate Code" onClick="runStringGeneration();" class="button-default-on">
                 </td>
                 </tr>
                 </table>
             </span>
             <span id="span-DeString" style="display: none;">
-                <input type="button" value="De String" onClick="runDeString();" class="button-default">
+                <input type="button" value="De String" onClick="runDeString();" class="button-default-on">
             </span>
             <div id="span-Cap" style="display: none;">
                 <table border="0">
@@ -97,7 +100,7 @@ var sTabSelected = "td-String";
                     <input type="radio" name="radTypeCase" value="Underscore">Underscore<br>
                 </td>
                 <td style="vertical-align: bottom;">
-                    <input type="button" value="Re-capitalize" onClick="runReCapitalize();" class="button-default">
+                    <input type="button" value="Re-capitalize" onClick="runReCapitalize();" class="button-default-on">
                     <input type="button" value="Put contents" onClick="putRecycledContent();" class="button-default putContents">
                 </td>
                 </tr>
@@ -118,7 +121,7 @@ var sTabSelected = "td-String";
                     <input type="checkbox" name="chxIsSetsCommasSeparators" value="yes" checked="checked"/>Commas are separators
                     <input type="checkbox" name="chxIsCommaSepOut" value="yes"/>Output Comma Sep
                     <input type="checkbox" name="chxIsSortSetsOutput" value="yes"/>Sort Output<br/>
-                    <input type="button" value="Run Operation" onClick="runSetsOp();" class="button-default">
+                    <input type="button" value="Run Operation" onClick="runSetsOp();" class="button-default-on">
                     <input type="button" value="Swap A &amp; B" onClick="swapSetInputs();" class="button-default putContents">
                 </td>
                 </tr>
@@ -141,7 +144,7 @@ var sTabSelected = "td-String";
                             <div id="formatFileStatusBar" class="codeWindow"></div>
                         </td>
                         <td style="vertical-align: bottom;">
-                            <input type="button" value="Re-Format" onClick="runReFormat();" class="button-default">
+                            <input type="button" value="Re-Format" onClick="runReFormat();" class="button-default-on">
                             <input type="button" value="Put contents" onClick="putRecycledContent();" class="button-default putContents">
                         </td>
                     </tr>
@@ -189,7 +192,7 @@ var sTabSelected = "td-String";
                         <option value="batrenamefiles">BAT Rename Files</option>
                         <option value="imagedisplaypage">Image Display Page</option>
                     </select>&nbsp;&nbsp;&nbsp;<input type="checkbox" value="acknowlegeTabs" checked="checked"/>tab=$<br>
-                    <input type="button" value="Functionize" onClick="runFunc();" class="button-default">
+                    <input type="button" value="Functionize" onClick="runFunc();" class="button-default-on">
                     <input type="button" value="tab to $" onClick="setTextAreaValue('txaOut', getTextAreaValue('txaIn').split('^t').join('\t').split('\t').join('$').split(' $').join('$').split('$ ').join('$'));" class="button-default">
                     <input type="button" value="Put contents" onClick="putRecycledContent();" class="button-default putContents">
                 </td>
@@ -216,7 +219,7 @@ var sTabSelected = "td-String";
                     <input type="text" name="txtSortMarker" class="txtDefault" value="3">
                 </td>
                 <td style="vertical-align: bottom;">
-                    <input type="button" value="  Sort  " onClick="runSort();" class="button-default">
+                    <input type="button" value="  Sort  " onClick="runSort();" class="button-default-on">
 <input type="button" value="Put contents" onClick="putRecycledContent();" class="button-default putContents">				</td>
                 </tr>
                 </table>
@@ -239,6 +242,7 @@ var sTabSelected = "td-String";
                     <hr/>
                     Presets <select name="selSetReplaceValues" onchange="runSetReplaceValues(this.name);">
                     	<option value="Returns">Returns</option>
+                    	<option value="JavaClean">Java</option>
                     	<option value="HTML">HTML</option>
                     	<option value="ASCII">ASCIIfy</option>
                     	<option value="Slashes">Slashes</option>
@@ -279,7 +283,7 @@ To replace special characters, use:<br>
                     ^n for new-line<br>
                     ^t for tab<br>
                     ^$ for $<br>&nbsp;</div>
-                    <input type="button" value="  Replace  " onClick="runReplace();" class="button-default">
+                    <input type="button" value="  Replace  " onClick="runReplace();" class="button-default-on">
                     <input type="button" value="Put contents" onClick="putRecycledContent();" class="button-default putContents">
                 </td>
                 </tr>
@@ -318,8 +322,8 @@ To replace special characters, use:<br>
                         <td>
                             Table Name
                         </td>
-                        <td style="width: 90%">
-                            <input type="button" class="button-default" value="Create Code" onclick="runGenerateDataObject()">
+                        <td style="width: 90%;border:1px solid #D8D8D8;"  onclick="runGenerateDataObject()">
+                            <input type="button" class="button-default-on" value="Create Code" onclick="runGenerateDataObject()">
                         </td>
                     </tr>
                     <!--tr>
@@ -374,6 +378,34 @@ To replace special characters, use:<br>
 	                </tr>
                 </table>
             </span>
+            <div id="span-HTMLLive" style="display: none;">
+	            <script>
+						function runHtmlLivePreview(){
+							var sValueFromEditor = document.forms[0].txaHTMLLiveEditor.value;
+							sValueFromEditor = sValueFromEditor.replace(/\n/g, "\r\n").replace(/\r\r/g, "\r").replace(/\r\n/g,"<br/>\n");
+							sValueFromEditor = sValueFromEditor.split("^t").join("\t");
+							document.forms[0].txaHtmlLiveHtmlDisplay.value = sValueFromEditor;
+							document.getElementById("areaHtmlLivePreview").innerHTML = sValueFromEditor;
+						}
+					</script>
+                <table border="0">
+                    <tr>
+                        <td colspan="2">
+									<div id="areaHtmlLivePreview" style="border: 1px solid #B1B2B3;background-color:white;"><b>HTMLLive</b> example <i>Code</i></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="">
+                        	HTMLLive<br/>
+									<textarea style="width:400px;height:200px;" name="txaHTMLLiveEditor" onkeypress="setTimeout('runHtmlLivePreview()',20);"><b>HTMLLive</b> example <i>Code</i></textarea>
+                        </td>
+                        <td style="">
+									HTML<br/>
+									<textarea name="txaHtmlLiveHtmlDisplay" style="width:400px;height:200px;"><b>HTMLLive</b> example <i>Code</i></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </td>
     </tr>
     <tr>

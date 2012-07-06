@@ -1,0 +1,51 @@
+<html>
+<head>
+<!--
+This file retrieved from the JS-Examples archives
+http://www.js-examples.com
+100s of free ready to use scripts, tutorials, forums.
+Author: JS-Examples - http://www.js-examples.com/ 
+-->
+</head>
+<body>
+
+<div id=update></div>
+<script>
+/*
+ * This works for IE4+ and NS6 (NS4 requires absolute positioning.
+ * Reference examples in DHTML category on http://www.js-examples.com/ for NS4 DHTML how-to.
+ */
+var isIE=document.all?true:false;
+var isDOM=document.getElementById?true:false;
+function previewIt(){
+  var _update=document.f1.ta.value;
+  // Make newlines show up - replace with BR tags.
+  var _regExp=/\n/gi;
+  _update=_update.replace(_regExp,"<BR>");
+
+  document.f1.ts.value=_update;
+  // isDOM=NS6 and IE6
+  if(isDOM) document.getElementById("update").innerHTML=_update;
+  // for IE4-IE5 : do not remember if "style" should be here or not.
+  else if(isIE) document.all.update.style.innerHTML=_update;
+}
+</script>
+<form name=f1>
+This is the input box: type in it.<BR>
+<textarea rows=6 cols=50 name=ta onkeypress="setTimeout('previewIt()',20);">
+This <b> is some</b> code <i>written for</i> you.
+NewLine
+Second NewLine
+Third NewLine
+</textarea>
+<BR><BR>
+HTML<br>
+<textarea name=ts rows=6 cols=50></textarea>
+</form>
+<script>
+previewIt();
+</script>
+
+
+</body>
+</html>

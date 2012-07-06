@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+	<template id="Hibernate" title="Hibernate">
+		<formula><![CDATA[
+$SECTION{norepeat}
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="${static.package}.${static.entityName}" table="${static.tableName}">
+$SECTION{}$IFFIRST{		<id name="id" column="DocumentId"></id>}		<property name="${name}" column="$UPPERCASE{${name}}" type="$LOWERCASE{${dataType}}"/>
+$SECTION{norepeat}
+
+	</class>
+</hibernate-mapping>
+$SECTION{}
+]]>		</formula>
+	</template>
+	<template id="JavaDaoObject" title="Java DAO Object">
+		<formula><![CDATA[
+$SECTION{norepeat}
+/**
+ * ${static.entityName}
+ * ${static.objectDescription}
+ */
+package ${static.package};
+ 
+$SECTION{norepeat}
+public class ${static.entityName} {
+  
+$SECTION{}	private ${dataType} ${name} = ${default}; // ${description}
+$SECTION{norepeat}
+  
+	//****************************//
+	//    Getters and Setters     //
+	//****************************//
+
+$SECTION{}
+ 
+	/**
+	 * Getter and setter for ${name}.
+	 * ${description}
+	 */
+	public ${dataType} get$LEADUPPERCASE{${name}}(){
+		return this.${name};
+	}
+	public void set$LEADUPPERCASE{${name}}(${dataType} _${name}){
+		this.${name} = _${name};
+	}
+$SECTION{norepeat}
+ 
+	/**
+	 * Convert object to string. Use:
+	 *   (new java.text.SimpleDateFormat("yyyy MM dd HH:mm:ss")).format(this.${name}) + "] "
+	 * to format Date objects.
+	 */
+	public String toString(){
+		return "${static.entityName}["
+$SECTION{}
+		+ "${name}:[" + $IF{${dataType}$java.util.Date$(new java.text.SimpleDateFormat("yyyy MM dd HH:mm:ss")).format($}this.${name}$IF{${dataType}$java.util.Date$)$} + "] "
+$SECTION{norepeat}
+		+ "]";
+	}
+}
+
+]]>		</formula>
+	</template>
+	<template id="javascriptObject" title="JavaScript Object">
+		<formula><![CDATA[
+$SECTION{norepeat}
+/**
+ * ${static.entityName}
+ * ${static.objectDescription}
+ */
+$SECTION{norepeat nonewline}
+function ${static.entityName}($SECTION{nonewline}
+$IFNOTFIRST{$IFNOTLAST{, }}$IFNOTLAST{_${name}}$IFLAST{){}
+$SECTION{norepeat}
+ 
+$SECTION{}$IFNOTLAST{	this.${name} = _${name}; // ${description}}
+$SECTION{norepeat}
+	this.${static.childDataObject}s = new Array();
+	this.add${static.childDataType} = function(${static.childDataObject}New){
+		this.${static.childDataObject}s[this.${static.childDataObject}s.length] = ${static.childDataObject}New;
+	}
+}
+]]>		</formula>
+	</template>
+	<template id="sqlCreateTable" title="SQL Create Table">
+		<formula><![CDATA[
+  CREATE TABLE "HIBERNATE_SIMPLE_APP"."PERSON_T" 
+   (	"ID" NUMBER(32,0) DEFAULT 0 NOT NULL ENABLE, 
+	"NAME" VARCHAR2(500 BYTE), 
+	"PHONE" VARCHAR2(500 BYTE), 
+	"ADDRESS" VARCHAR2(500 BYTE), 
+	 CONSTRAINT "PERSON_T_PK" PRIMARY KEY ("ID")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT)
+  TABLESPACE "USERS"  ENABLE
+   ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT)
+  TABLESPACE "USERS" ;
+ 
+
+  CREATE OR REPLACE TRIGGER "HIBERNATE_SIMPLE_APP"."PERSON_T_TRG" 
+BEFORE INSERT ON PERSON_T
+FOR EACH ROW 
+BEGIN
+  SELECT PERSON_T_SEQ.NEXTVAL INTO :NEW.ID FROM DUAL;
+END;
+
+/
+ALTER TRIGGER "HIBERNATE_SIMPLE_APP"."PERSON_T_TRG" ENABLE;
+]]>		</formula>
+	</template>
+	<template id="sqlCreateTable" title="SQL Create Table">
+		<formula><![CDATA[
+$SECTION{norepeat}
+Welcome to ${static.project} ${static.entityName}
+<table cellpadding="0" cellspacing="0" border="0" class="" style="">
+<!-- ${static.entityName} -->
+<!-- ${static.javaClassPath} -->
+$SECTION{}
+	<tr>
+		<td>$LEADUPPERCASE{${name}}</td>
+		<td>${type}</td>
+		<td>$REPLACE{${type}$String$VARCHAR}</td>
+		<td>${description}</td>
+	</tr>
+	$COUNTER{}
+$SECTION{norepeat}
+</table>
+]]>		</formula>
+	</template>
+	<template id="htmlFormTable" title="HTML Form Table">
+		<formula><![CDATA[
+$SECTION{norepeat}package ${static.javaClassPath};
+
+/**
+ * $LEADUPPERCASE{${static.entityName}} Value Object.
+ */
+public class $LEADUPPERCASE{${static.entityName}}VO ${javaClassImplementsOrExtends} {
+
+$SECTION{}
+	private ${dataType} ${name} = ${default}; // ${name} of the $LEADUPPERCASE{${static.entityName}}.
+$SECTION{}
+	/**
+	 * Id of the $LEADUPPERCASE{${static.entityName}}.
+	 */
+	public Integer get$LEADUPPERCASE{${name}}(){
+		return this.id;
+	}
+
+	/**
+	 * Id of the $LEADUPPERCASE{${static.entityName}}.
+	 * @param valToSet The Id of the $LEADUPPERCASE{${static.entityName}} value.
+	 */
+	public void set$LEADUPPERCASE{${name}}(Integer valToSet){
+		this.${name} = valToSet;
+	}
+
+$SECTION{norepeat}
+ 
+	/**
+	 * Convert the object to an easily readble string.
+	 */
+	public String toString(){
+$SECTION{}
+		$IFFIRST{return }$IFNOTFIRST{+ } this.${name} + $IFLAST{"]";}$IFNOTLAST{"]["}
+$SECTION{norepeat}
+	}
+
+}]]>		</formula>
+	</template>
+</templates>

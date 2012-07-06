@@ -142,7 +142,7 @@ function runSetsOp(){
     var asOut = new Array();
     var sSpliceSep = "$";
     if(sSetting == "Splice"){
-        var sSpliceSep = document.forms[0].txtSetsSeparator.value;
+        sSpliceSep = document.forms[0].txtSetsSeparator.value;
         var iRenderedSoFar = 0;
         for(; iRenderedSoFar < Math.min(asInA.length, asInB.length); iRenderedSoFar++){
             asOut[asOut.length] = asInA[iRenderedSoFar] + sSpliceSep + asInB[iRenderedSoFar];
@@ -173,17 +173,17 @@ function runSetsOp(){
     } else if(sSetting == "Cartesian"){
         // Take away all of the A elements which are in B.
         var sSeparator = document.forms[0].txtSetsSeparator.value;
-        for(var iAX = 0; iAX < asInA.length; iAX++){
-            for(var iBX = 0; iBX < asInB.length; iBX++){
-                asOut[asOut.length] = asInA[iAX] + sSeparator + asInB[iBX];
+        for(var iAX2 = 0; iAX2 < asInA.length; iAX2++){
+            for(var iBX2 = 0; iBX2 < asInB.length; iBX2++){
+                asOut[asOut.length] = asInA[iAX2] + sSeparator + asInB[iBX2];
             }
         }
     } else {
         // "Common" was chosen.
-        for(var iAX = 0; iAX < asInA.length; iAX++){
-            if(sInBSearch.indexOf(asInA[iAX]) != -1){
+        for(var ixCommon = 0; ixCommon < asInA.length; ixCommon++){
+            if(sInBSearch.indexOf(asInA[ixCommon]) != -1){
                 // Current A elem is ALSO IN B.
-                asOut[asOut.length] = asInA[iAX];
+                asOut[asOut.length] = asInA[ixCommon];
             }
         }
     }
@@ -242,6 +242,7 @@ function runReFormat(){
         sOut = removeBetween(sOut, "/" + "*", "*" + "/");
         sOut = trimLines(sOut);
         sOut = sOut.split(": ").join(":").split(",").join(", ").split("  ").join(" ").split("  ").join(" ").split("  ").join(" ");
+        sOut = sOut.split(" \r").join("\r");
         sOut = sOut.split("$IMPOSSIBLESTREINFDF$").join("**");
         var iEndLen = sOut.length;
         sStatus += sOut.length;
@@ -350,10 +351,14 @@ function changeTab(sTabNew){
         document.getElementById("table-inAndOutFields").style.display = "none";
     } else if(sTabNew == "td-DataObject"){
         document.getElementById("span-DataObject").style.display = "";
+        hideShowMainInputField(false);
         resumeDobjEntitySelector();
         resumeDobjTemplateSelector();
     } else if(sTabNew == "td-FormatFile"){
         document.getElementById("span-FormatFile").style.display = "";
+    } else if(sTabNew == "td-HTMLLive"){
+    	document.getElementById("span-HTMLLive").style.display = "";
+    	document.getElementById("table-inAndOutFields").style.display = "none";
     } else if(sTabNew == "td-Clippy"){
         document.getElementById("span-Clippy").style.display = "";
     }
@@ -700,7 +705,8 @@ function runReplace(){
     var aiChangeCount = new Array();
     for(var i = 0; i < asPairs.length; i++){
         var sSRTemp = replaceSubstring(asPairs[i],"^t","\t");
-        sSRTemp = replaceSubstring(sSRTemp,"^n","\r\n");
+        //sSRTemp = replaceSubstring(sSRTemp,"^n","\r\n");
+        sSRTemp = replaceSubstring(sSRTemp,"^n","\n");
         var asSR = replaceSubstring(sSRTemp,"^n","\n").split("$");
         if(asSR.length == 1){
             asSR[1] = "";
@@ -892,26 +898,26 @@ function setTemplateMod(selSrc){
         sOut += "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"\" style=\"\">";
         //sOut += "\n$SECTION{}";
         sOut += "\n$SECTION{}\n\t<tr>";
-        for(var i = 0; i < iVars; i++){
-            sOut += "\n\t\t<td>${" + i + "}</td>";
+        for(var iVarCounter = 0; iVarCounter < iVars; iVarCounter++){
+            sOut += "\n\t\t<td>${" + iVarCounter + "}</td>";
         }
         sOut += "\n\t</tr>\n$SECTION{norepeat}";
         sOut += "\n</table>";
     } else if(sValueFromSel == "sqlinsert"){
         //sOut += "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"\" style=\"\">";
         sOut += "insert into table_t (\n";
-        for(var i = 0; i < iVars; i++){
-            if(i > 0){
+        for(var iColCount = 0; iColCount < iVars; iColCount++){
+            if(iColCount > 0){
                 sOut += ", ";
             }
-            sOut += "column" + i + "";
+            sOut += "column" + iColCount + "";
         }
         sOut += "\n) values (\n";
-        for(var i = 0; i < iVars; i++){
-            if(i > 0){
+        for(var iVarCounter = 0; iVarCounter < iVars; iVarCounter++){
+            if(iVarCounter > 0){
                 sOut += ", ";
             }
-            sOut += "${" + i + "}";
+            sOut += "${" + iVarCounter + "}";
         }
         sOut += "\n);\n";
         sOut += "$SECTION{norepeat}";
@@ -1207,6 +1213,21 @@ function runSetReplaceValues(sSelName){
     var sOut = "";
     if(sType == "Returns"){
     	sOut = "^n^n^n^n^n^n^n^n$^n\n^n^n^n^n$^n\n^n^n^n$^n\n^n^n$^n\n^n^n$^n";
+    } else if(sType == "JavaClean"){
+    	sOut += "    $^t";
+    	sOut += "\n<$&lt;";
+    	sOut += "\n>$&gt;";
+    	sOut += "\n;  $; ";
+    	sOut += "\n^t   $^t^t";
+    	sOut += "\n^t $^t";
+    	sOut += "\n^t $^t";
+    	sOut += "\n   ^t$^t";
+    	sOut += "\n ^t$^t";
+    	sOut += "\n ^t$^t";
+    	sOut += "\n^n^t$^n";
+    	/*
+    	sOut += "\n";
+    	*/
     } else if(sType == "HTML"){
         sOut += "<!DOCTYPE HTML PUBLIC $<!doctype html public ";
         sOut += "\n<HTML>$<html>";
@@ -1261,6 +1282,7 @@ function runSetReplaceValues(sSelName){
 	} else if(sType == "ASCII"){
 		sOut = "'$&apos;";
 		sOut += "\n’$&apos;";
+		sOut += "\n‘$&apos;";
 		sOut += "\n—$-";
 		sOut += "\n–$-";
 		sOut += "\n·$";

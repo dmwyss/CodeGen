@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>CodeGen3.0</title>
+<title>CodeGen3.1</title>
 <meta name="description" content="A file containing one of each of the main HTML input types, and most common non-form-elements.">
 <meta name="keywords" content="css form table select text input stylesheet">
 <script>
@@ -21,7 +21,7 @@ var sTabSelected = "td-String";
 <script type="text/javascript" src="js/dobjCore.js"></script>
 <script type="text/javascript" src="js/ajaxUtils.js"></script>
 </head>
-<body onLoad="runOnLoad();">
+<body onLoad="runOnLoad();alert('This version of CodeGen - 3.1 has been superseded.');">
 <form>
 <table style="margin-top: 2px;margin-left: 2px;width: 98%;" cellpadding="2" cellspacing="0">
     <tr>
@@ -54,6 +54,9 @@ var sTabSelected = "td-String";
         </td>
         <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-FormatFile">
             Format File
+        </td>
+        <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-HTMLLive">
+            HTMLLive
         </td>
         <td class="table-tab-off" style="width:90px;" onMouseOver="doMouseOverTab(this)" onMouseOut="doMouseOutTab(this)" onClick="doOnClickTab(this)" id="td-Clippy">
             Clippy (<span id="span-clippyCount">0</span>)
@@ -310,31 +313,8 @@ To replace special characters, use:<br>
                             Templates:
                         </td>
                         <td style="width: 90%">
-                            <div id="dobj-templateSelector"></div><input type="button" value="Refresh" onclick="refreshDoj()"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Objects:
-                        </td>
-                        <td style="width: 90%">
-                            <input type="checkbox" name="txtDobj_setting_intAsInteger" onchange="doOnChangeTxtDobjSetting()">Present int as Integer</checkbox>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Project Name
-                        </td>
-                        <td style="width: 90%">
-                            <input type="text" name="txtDobj_projectName" class="txtDefault" onblur="formatAsClassName(this)" value="PROJECT_NAME"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Class Name
-                        </td>
-                        <td style="width: 90%">
-                            <input type="text" name="txtDobj_className" class="txtDefault" onblur="formatAsClassName(this)"/>
+                            <div id="dobj-entitySelector" style="display:inline;"></div> <input type="button" value="Refresh Entities" onclick="refreshDobjEntities()" class="button-default"/> &nbsp; &nbsp; 
+                            <div id="dobj-templateSelector" style="display:inline;"></div> <input type="button" value="Refresh Templates" onclick="refreshDobjTemplates()" class="button-default"/>
                         </td>
                     </tr>
                     <tr>
@@ -342,14 +322,10 @@ To replace special characters, use:<br>
                             Table Name
                         </td>
                         <td style="width: 90%">
-                            <input type="text" name="txtDobj_tableName" class="txtDefault" onblur="formatAsTableName(this)"/>_t
-                            <select name="txtDobj_classNameSelect" onchange="doOnChangeDobjClassNameSelect(this)">
-                                <option value="">-</option>
-                            </select>
                             <input type="button" class="button-default" value="Create Code" onclick="runGenerateDataObject()">
                         </td>
                     </tr>
-                    <tr>
+                    <!--tr>
                         <td>
                             Convert
                         </td>
@@ -374,7 +350,7 @@ To replace special characters, use:<br>
                             </div>
                             </div>
                         </td>
-                    </tr>
+                    </tr-->
                 </table>
             </span>
             <span id="span-Clippy" style="display: none;">
